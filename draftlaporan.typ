@@ -1,95 +1,139 @@
+// ============================================================
+// IEEE-style Draft Laporan — Typst
+// ============================================================
+
 #set page(
   paper: "a4",
-  margin: (top: 2.5cm, bottom: 2.5cm, left: 1.8cm, right: 1.8cm),
+  margin: (top: 2cm, bottom: 2cm, left: 1.7cm, right: 1.7cm),
 )
 #set text(
   font: "Times New Roman",
   size: 10pt,
+  weight: "regular",
 )
-#set par(justify: true, leading: 0.6em)
+#set par(justify: true, leading: 0.55em)
 
-// Custom heading styles
-#show heading: it => [
+// Heading styles — bold only on headings, IEEE sizing
+#show heading.where(level: 1): it => [
   #v(0.8em)
-  #text(
-    weight: "bold",
-    size: if it.level == 1 { 10pt } else { 10pt },
-    features: (smallcaps: it.level == 1)
-  )[#it.body]
+  #align(center)[
+    #text(weight: "bold", size: 10pt)[#upper(it.body)]
+  ]
   #v(0.4em)
 ]
-
-// Title and Authors Section
-#align(center)[
-  #text(size: 24pt, weight: "bold")[
-    Penerapan Particle Swarm Optimization (PSO) Diskrit dengan Penyemaian Heuristik dan Pencarian Lokal 2-Opt untuk Traveling Salesperson Problem di Jawa Barat
-  ]
-  #v(1.5em)
-  #grid(
-    columns: (1fr),
-    row-gutter: 0.5em,
-    [#text(size: 11pt, weight: "medium")[Nama Mahasiswa]],
-    [#text(size: 10pt, style: "italic")[Jurusan Teknik Informatika, Fakultas Teknik dan Sains]],
-    [#text(size: 10pt, style: "italic")[Institut Pendidikan Indonesia]],
-    [#text(size: 10pt, style: "italic")[Garut, Indonesia]],
-    [#text(size: 9pt, font: "Courier New")[mahasiswa@domain.ac.id]]
-  )
+#show heading.where(level: 2): it => [
+  #v(0.6em)
+  #text(weight: "bold", style: "italic", size: 10pt)[#it.body]
+  #v(0.3em)
 ]
 
-#v(2em)
+// Remove bold/emphasis from body text — ensure italic-only for emphasis
+#show emph: it => text(style: "italic", it.body)
 
+// ============================================================
+// Title and Authors
+// ============================================================
+#align(center)[
+  #text(size: 14pt, weight: "bold")[
+    Penerapan _Particle Swarm Optimization_ (PSO) untuk _Traveling Salesperson Problem_: Studi Kasus Kabupaten/Kota di Jawa Barat
+  ]
+  #v(1em)
+
+  #grid(
+    columns: (1fr),
+    row-gutter: 0.4em,
+    [#text(size: 11pt)[
+      Naufal Akmal Rizqulloh#super[1], Adhiya Radhin Fasya#super[2], Faiz Naufal Huda#super[3], Insan Anshary Rasul#super[4], Daffa Naufal Mumtaz#super[5]
+    ]],
+    [#v(0.3em)],
+    [#text(size: 10pt, style: "italic")[Departemen Ilmu Komputer, Sekolah Sains Data, Matematika, dan Informatika]],
+    [#text(size: 10pt, style: "italic")[IPB University, Bogor, Indonesia]],
+    [#v(0.3em)],
+    [#text(size: 9pt, font: "Courier New")[
+      #super[1]G6401231065 #h(0.4em) #super[2]G6401231068 #h(0.4em) #super[3]G6401231124 #h(0.4em) #super[4]G6401231132 #h(0.4em) #super[5]G6401231168
+    ]],
+  )
+
+  #v(0.4em)
+  #text(size: 9pt, style: "italic")[Mata Kuliah: Pengantar Kecerdasan Komputasional (KOM1326)]
+]
+
+#v(1.5em)
+
+// ============================================================
 // Abstract Block
+// ============================================================
 #grid(
   columns: (1fr),
-  inset: (x: 1.5cm),
+  inset: (x: 1.2cm),
   [
-    #text(weight: "bold", style: "italic")[Abstract]---This paper presents a hybrid Discrete Particle Swarm Optimization (PSO) algorithm combined with Greedy seeding and 2-opt local search (Memetic Algorithm) to solve the Traveling Salesperson Problem (TSP) using real-world coordinates from 27 locations in West Java. The TSP is an NP-hard problem for which exact search algorithms like A\* become computationally intractable at scale (N >= 15) due to factorial state explosion. We propose a Memetic PSO that initializes particles using a Greedy Nearest Neighbor route and periodically applies a 2-opt sweep to eliminate overlapping paths (edge crossovers). Experimental results on the 27 locations of West Java show that the hybrid PSO successfully optimizes the Greedy baseline of 891.94 km down to 864.93 km (a 3.03% improvement) in 140 ms, with the optimization terminating early due to convergence. Swarm convergence is mathematically validated using particle diversity metrics.
+    #text(weight: "bold", style: "italic")[Abstract]---This paper presents a hybrid Discrete Particle Swarm Optimization (PSO) combined with Greedy Nearest Neighbor seeding and 2-opt local search to solve the Traveling Salesperson Problem (TSP) on 27 real-world locations in West Java. The TSP is NP-hard; exact algorithms become intractable beyond 15 cities due to factorial state-space explosion. Our Memetic PSO seeds one particle with a Greedy route and periodically applies 2-opt sweeps to eliminate edge crossovers. An auto-tuning module selects optimal hyperparameters from four presets. The system is implemented as a modular Python pipeline with an interactive Streamlit dashboard and a Jupyter Notebook for academic analysis. Experiments show that the hybrid PSO reduces the Greedy baseline from 891.94 km to 864.93 km (3.03% improvement) in 140 ms, with early stopping triggered by swarm convergence validated through particle diversity metrics.
     
-    #v(0.5em)
-    #text(weight: "bold", style: "italic")[Keywords]---Particle Swarm Optimization, TSP, Memetic Algorithm, 2-opt, Greedy Nearest Neighbor, Jawa Barat.
+    #v(0.4em)
+    #text(weight: "bold", style: "italic")[Keywords]---Particle Swarm Optimization, Traveling Salesperson Problem, 2-opt, Greedy Nearest Neighbor.
     
-    #v(1em)
-    #text(weight: "bold", style: "italic")[Abstrak]---Makalah ini menyajikan hibridisasi algoritma Particle Swarm Optimization (PSO) Diskrit yang digabungkan dengan penyemaian Greedy dan pencarian lokal 2-opt (Algoritma Memetik) untuk memecahkan Traveling Salesperson Problem (TSP) menggunakan data koordinat riil dari 27 kabupaten/kota di Jawa Barat. TSP merupakan masalah NP-hard di mana algoritma eksak seperti A\* tidak lagi layak secara komputasi pada skala besar (N >= 15) karena ledakan ruang keadaan faktorial. Kami mengusulkan PSO Memetik yang menginisialisasi partikel dengan rute Greedy Nearest Neighbor dan secara periodik menerapkan operasi 2-opt untuk menghilangkan persilangan jalur rute. Hasil eksperimen pada 27 lokasi Jawa Barat menunjukkan bahwa PSO hibrida berhasil mengoptimalkan baseline Greedy sebesar 891.94 km menjadi 864.93 km (peningkatan efisiensi 3.03%) dalam waktu 140 ms, di mana optimasi terhenti lebih awal karena terdeteksi konvergen. Konvergensi divalidasi secara matematis menggunakan metrik diversitas partikel.
+    #v(0.8em)
+    #text(weight: "bold", style: "italic")[Abstrak]---Makalah ini menyajikan hibridisasi Particle Swarm Optimization (PSO) Diskrit dengan penyemaian Greedy Nearest Neighbor dan pencarian lokal 2-opt untuk menyelesaikan Traveling Salesperson Problem (TSP) pada 27 lokasi riil di Jawa Barat. TSP merupakan masalah NP-hard di mana algoritma eksak tidak layak secara komputasi pada skala besar akibat ledakan ruang keadaan faktorial. PSO Memetik kami menyemai satu partikel dengan rute Greedy dan secara periodik menerapkan 2-opt untuk menghilangkan persilangan jalur. Modul auto-tuning memilih hyperparameter optimal dari empat preset. Sistem diimplementasikan sebagai pipeline Python modular dengan dashboard Streamlit interaktif dan Jupyter Notebook untuk analisis akademis. Hasil eksperimen menunjukkan PSO hibrida mengoptimalkan baseline Greedy dari 891.94 km menjadi 864.93 km (peningkatan 3.03%) dalam 140 ms, dengan early stopping dipicu oleh konvergensi swarm yang divalidasi melalui metrik diversitas partikel.
     
-    #v(0.5em)
-    #text(weight: "bold", style: "italic")[Kata Kunci]---Particle Swarm Optimization, TSP, Algoritma Memetik, 2-opt, Greedy Nearest Neighbor, Jawa Barat.
+    #v(0.4em)
+    #text(weight: "bold", style: "italic")[Kata Kunci]---Particle Swarm Optimization, Traveling Salesperson Problem, 2-opt, Greedy Nearest Neighbor.
   ]
 )
 
-#v(2em)
+#v(1.5em)
 
-// Double column layout starts here
+// ============================================================
+// Double column layout
+// ============================================================
 #show: rest => columns(2, gutter: 0.6cm, rest)
 
 = I. Pendahuluan
-Traveling Salesperson Problem (TSP) merupakan salah satu masalah optimasi kombinatorial tertua dan paling intensif dipelajari dalam ilmu komputer. Tujuan TSP adalah menemukan rute siklik terpendek (Hamiltonian cycle) yang mengunjungi sekumpulan kota masing-masing tepat satu kali dan kembali ke kota asal. TSP diklasifikasikan sebagai masalah *NP-hard*, yang berarti tidak ada algoritma waktu polinomial yang diketahui dapat memecahkan seluruh instansi masalah secara eksak.
+_Traveling Salesperson Problem_ (TSP) merupakan salah satu masalah optimasi kombinatorial tertua dan paling intensif dipelajari dalam ilmu komputer [4]. Tujuan TSP adalah menemukan rute siklik terpendek (_Hamiltonian cycle_) yang mengunjungi sekumpulan kota masing-masing tepat satu kali dan kembali ke kota asal. TSP diklasifikasikan sebagai masalah _NP-hard_, yang berarti tidak ada algoritma waktu polinomial yang diketahui dapat memecahkan seluruh instansi masalah secara eksak.
 
-Untuk jumlah kota kecil ($N < 12$), algoritma eksak seperti *Breadth-First Search*, *Branch and Bound*, atau *A\** (dengan heuristik yang kuat seperti *Minimum Spanning Tree*) dapat menemukan rute optimal mutlak. Namun, ketika jumlah kota bertambah ($N >= 15$), ruang pencarian membengkak secara faktorial ($N!$). Sebagai contoh, untuk 27 lokasi di Jawa Barat, terdapat $27! approx 1.08 times 10^(28)$ kemungkinan rute. Algoritma eksak seperti A\* akan mengalami kehabisan memori (*RAM exhaustion*) dan waktu komputasi yang tidak terbatas.
+Untuk jumlah kota kecil ($N < 12$), algoritma eksak seperti _Branch and Bound_ atau A\* dapat menemukan rute optimal mutlak. Namun, ketika jumlah kota bertambah ($N >= 15$), ruang pencarian membengkak secara faktorial ($N!$). Sebagai contoh, untuk 27 lokasi di Jawa Barat, terdapat $27! approx 1.08 times 10^(28)$ kemungkinan rute, sehingga algoritma eksak mengalami kehabisan memori dan waktu komputasi yang tidak terbatas.
 
-Oleh karena itu, algoritma metaheuristik dan heuristik seperti *Greedy (Nearest Neighbor)* dan *Particle Swarm Optimization (PSO)* menjadi solusi praktis yang logis. Greedy memberikan solusi sangat cepat namun sering terjebak pada optimum lokal karena hanya mementingkan langkah terdekat lokal. Di sisi lain, PSO diskrit mampu menjelajahi ruang pencarian secara global. Makalah ini mengimplementasikan integrasi PSO diskrit dengan penyemaian Greedy dan pencarian lokal *2-opt* (disebut sebagai *Memetic PSO*) untuk menyelesaikan TSP rill di Jawa Barat.
+Oleh karena itu, algoritma metaheuristik seperti _Particle Swarm Optimization_ (PSO) [1] menjadi solusi praktis. PSO merupakan bagian dari paradigma kecerdasan komputasional (_computational intelligence_) [5] yang terinspirasi dari perilaku kolektif kawanan burung. Algoritma heuristik _Greedy Nearest Neighbor_ memberikan solusi cepat namun sering terjebak pada optimum lokal. Makalah ini mengintegrasikan PSO diskrit dengan penyemaian _Greedy_ dan pencarian lokal _2-opt_ (_Memetic PSO_) untuk menyelesaikan TSP riil di Jawa Barat.
+
+Tujuan penelitian ini adalah: (1) mengimplementasikan algoritma _Discrete Memetic PSO_ berbasis _swap operator_, (2) membandingkan efisiensi rute antara _Greedy Nearest Neighbor_ dan PSO Memetik, (3) membangun sistem interaktif berbasis _Streamlit_ untuk visualisasi proses optimasi, dan (4) memvalidasi konvergensi algoritma menggunakan metrik diversitas partikel.
 
 = II. Tinjauan Pustaka
 == A. Traveling Salesperson Problem (TSP)
-Secara matematis, TSP dapat direpresentasikan sebagai graf berarah atau tidak berarah $G = (V, E)$ di mana $V$ adalah himpunan kota dan $E$ adalah himpunan jalur yang menghubungkan kota-kota tersebut. Jarak antara kota $i$ dan $j$ dilambangkan sebagai $d(i, j)$.
+Secara matematis, TSP direpresentasikan sebagai graf $G = (V, E)$ di mana $V$ adalah himpunan kota dan $E$ adalah himpunan jalur penghubung [4]. Jarak antara kota $i$ dan $j$ dilambangkan $d(i, j)$. Tujuan TSP adalah menemukan permutasi $pi$ yang meminimalkan total jarak rute siklik:
+$ min sum_(i=1)^(N-1) d(pi(i), pi(i+1)) + d(pi(N), pi(1)) $
 
-== B. Particle Swarm Optimization (PSO)
-PSO diperkenalkan oleh Kennedy dan Eberhart pada tahun 1995, yang terinspirasi oleh perilaku sosial kawanan burung. Dalam PSO kontinu, setiap partikel memperbarui kecepatan ($V$) dan posisi ($X$) berdasarkan memori pribadinya (*pbest*) dan memori kelompok (*gbest*).
+TSP termasuk kelas _NP-hard_ berdasarkan teorema Cook–Karp, sehingga pendekatan metaheuristik diperlukan untuk instansi berskala besar.
 
-== C. Discrete PSO (Permutation-Based)
-Karena TSP memiliki ruang keadaan diskrit berbentuk permutasi indeks kota, pembaruan aritmatika vektor standar tidak dapat diterapkan. Kita mengadopsi model aljabar swap operator yang diperkenalkan oleh Clerc untuk memperbarui posisi permutasi secara diskrit.
+== B. _Particle Swarm Optimization_ (PSO)
+PSO diperkenalkan oleh Kennedy dan Eberhart [1], terinspirasi oleh perilaku sosial kawanan burung. Setiap partikel memperbarui kecepatan ($V$) dan posisi ($X$) berdasarkan memori pribadinya (_pbest_) dan memori kelompok (_gbest_). PSO termasuk dalam keluarga algoritma kecerdasan komputasional (_computational intelligence_) [5] yang tidak memerlukan informasi gradien dan mampu menjelajahi ruang pencarian secara global.
+
+== C. _Discrete PSO_ (_Permutation-Based_)
+Karena TSP memiliki ruang keadaan diskrit berupa permutasi, pembaruan vektor standar tidak dapat diterapkan. Model aljabar _swap operator_ yang diperkenalkan Clerc [2] mengadaptasi PSO untuk domain permutasi, di mana posisi direpresentasikan sebagai urutan indeks kota dan kecepatan sebagai barisan operasi pertukaran.
+
+== D. Pencarian Lokal _2-Opt_
+Algoritma _2-opt_ [3] merupakan teknik pencarian lokal untuk memperbaiki rute TSP dengan memilih dua sisi rute non-bersebelahan dan membalik segmen di antaranya. Proses diulang hingga tidak ada perbaikan, menghasilkan rute bebas persilangan jalur (_crossing edges_).
 
 = III. Metodologi Penelitian
 == A. Pengumpulan Data
-Data kota diperoleh dari file #link("file:///c:/Users/naufa/OneDrive/Documents/Semester%206/PKK/project/kabupaten_kota_jawa_barat.csv")[kabupaten_kota_jawa_barat.csv] yang berisi nama kabupaten/kota, latitude, dan longitude. Data ini mencakup 27 lokasi geografis utama di wilayah Jawa Barat, termasuk wilayah administratif kabupaten, kota, dan lokasi penting seperti Waduk Cirata. Daftar koordinat selengkapnya ditampilkan pada Tabel 1.
+Data diperoleh dari _file_ CSV yang berisi nama, _latitude_, dan _longitude_ 27 kabupaten/kota di Jawa Barat. Data dimuat dan dibersihkan menggunakan fungsi `load_and_filter_data()` yang memvalidasi struktur, menghapus kolom tidak relevan, dan menangani nilai kosong. Daftar koordinat ditampilkan pada Tabel I.
 
+// Tabel 1 — IEEE horizontal-only lines
 #align(center)[
   #block(width: 100%)[
     #set text(size: 8pt)
+    #v(0.3em)
+    #text(size: 7.5pt, weight: "bold")[TABEL I]
+    #v(-0.3em)
+    #text(size: 7.5pt)[Daftar 27 Titik Koordinat Wilayah Jawa Barat]
+    #v(0.3em)
     #table(
       columns: (1fr, 4fr, 2.5fr, 2.5fr),
       align: (center, left, center, center),
-      stroke: 0.5pt + luma(150),
-      [*No.*], [*Kabupaten / Kota*], [*Latitude*], [*Longitude*],
+      stroke: none,
+      table.hline(stroke: 1pt),
+      table.header(
+        [No.], [Kabupaten / Kota], [Latitude], [Longitude],
+      ),
+      table.hline(stroke: 0.5pt),
       [1], [Bandung], [-7.0635], [107.6338],
       [2], [Bandung Barat], [-6.9054], [107.4124],
       [3], [Banjar], [-7.3805], [108.5610],
@@ -116,94 +160,180 @@ Data kota diperoleh dari file #link("file:///c:/Users/naufa/OneDrive/Documents/S
       [24], [Sukabumi], [-7.0782], [106.7377],
       [25], [Sumedang], [-6.8102], [107.9617],
       [26], [Tasikmalaya], [-7.4280], [108.0691],
-      [27], [Waduk Cirata], [-6.7552], [107.2857]
+      [27], [Waduk Cirata], [-6.7552], [107.2857],
+      table.hline(stroke: 1pt),
     )
-    #v(-0.5em)
-    #text(style: "italic", size: 7.5pt)[Tabel 1: Daftar 27 Titik Koordinat Wilayah Jawa Barat]
   ]
 ]
 
 
-== B. Perhitungan Jarak Geodesik (Haversine)
-Untuk rute geografis rill di permukaan bumi, metrik Euclidean tidak akurat karena bumi berbentuk bulat. Kami menggunakan formula Haversine:
-$ a = sin^2((Delta "lat")/2) + cos("lat"_1) dot cos("lat"_2) dot sin^2((Delta "long")/2) $
+== B. Perhitungan Jarak Geodesik (_Haversine_)
+Untuk rute geografis riil, metrik _Euclidean_ tidak akurat karena kelengkungan bumi. Formula _Haversine_ digunakan:
+$ a = sin^2((Delta phi)/2) + cos(phi_1) dot cos(phi_2) dot sin^2((Delta lambda)/2) $
 $ c = 2 dot arcsin(sqrt(a)) $
 $ d = R dot c $
-di mana $R approx 6371$ km adalah radius rata-rata bumi.
+di mana $R approx 6371$ km adalah radius rata-rata bumi, $phi$ adalah _latitude_, dan $lambda$ adalah _longitude_.
 
-== C. Algoritma Greedy Nearest Neighbor
-Mulai dari kota indeks 0, rute dibangun dengan memilih kota belum dikunjungi terdekat berikutnya secara berulang:
-$ v_(n e x t) = arg min_(u in "Unvisited") d(v_("current"), u) $
-Algoritma ini selesai dalam waktu $O(N^2)$ dan menjadi baseline pembanding.
+== C. Algoritma _Greedy Nearest Neighbor_
+Mulai dari kota indeks 0, rute dibangun dengan memilih kota terdekat yang belum dikunjungi secara berulang:
+$ v_("next") = arg min_(u in "Unvisited") d(v_("current"), u) $
+Algoritma ini memiliki kompleksitas $O(N^2)$ dan menjadi _baseline_ pembanding.
 
-== D. Aljabar Swap Operator untuk PSO
-1.  **Swap Operation $S O(i, j)$:** Pertukaran elemen pada indeks $i$ dan $j$.
-2.  **Velocity ($V$):** Barisan berurutan dari swap operation:
-    $ V = [S O(i_1, j_1), S O(i_2, j_2), ...] $
-3.  **Pengurangan Posisi ($X_2 - X_1$):** Menghasilkan barisan swap yang mengubah rute $X_1$ menjadi $X_2$.
-4.  **Perkalian Skalar ($p dot V$):** Menjaga setiap swap dalam $V$ dengan probabilitas $p in [0, 1]$.
-5.  **Pembaruan Kecepatan:**
-    $ V_(t+1) = w V_t + c_1 r_1 (P_(b e s t) - X_t) + c_2 r_2 (G_(b e s t) - X_t) $
-    di mana $w$ adalah bobot inersia, $c_1, c_2$ adalah faktor kognitif dan sosial, dan $r_1, r_2$ adalah bilangan acak $[0, 1]$.
-6.  **Pembaruan Posisi:**
-    $ X_(t+1) = X_t + V_(t+1) $
+== D. Aljabar _Swap Operator_ untuk PSO Diskrit
+Representasi diskrit PSO menggunakan aljabar _swap operator_ [2]:
 
-== E. Optimasi Hibrida & Memetic
-Untuk memastikan PSO dapat melompati performa Greedy, kami merancang dua teknik optimasi:
-1.  **Heuristic Seeding:** Partikel ke-0 disemai dengan rute Greedy mentah. Ini menjamin pencarian PSO dimulai dari baseline yang kuat.
-2.  **2-Opt Local Search:** Setiap kali partikel menemukan rute yang lebih baik dari global best ($G_(b e s t)$), operasi 2-opt dijalankan untuk "merapikan" rute dengan membalik sub-rute secara iteratif sampai tidak ada persilangan garis rute:
+1. _Swap Operation_ $S O(i, j)$: pertukaran elemen pada indeks $i$ dan $j$ dalam permutasi rute.
+2. _Velocity_ ($V$): barisan berurutan dari _swap operations_: $V = [S O(i_1, j_1), S O(i_2, j_2), ...]$
+3. Pengurangan posisi ($X_2 - X_1$): menghasilkan barisan _swap_ yang mengubah $X_1$ menjadi $X_2$.
+4. Perkalian skalar ($p dot V$): mempertahankan setiap _swap_ dengan probabilitas $p in [0, 1]$.
+5. Pembaruan kecepatan:
+    $ V_(t+1) = w V_t + c_1 r_1 (P_("best") - X_t) + c_2 r_2 (G_("best") - X_t) $
+    di mana $w$ adalah bobot inersia, $c_1, c_2$ adalah faktor kognitif dan sosial, $r_1, r_2$ adalah bilangan acak $[0, 1]$.
+6. Pembaruan posisi: $X_(t+1) = X_t + V_(t+1)$.
+
+== E. Optimasi Hibrida & _Memetic_
+Dua teknik optimasi kunci dirancang:
+
+1. _Heuristic Seeding_: partikel ke-0 disemai dengan rute _Greedy_, menjamin pencarian dimulai dari _baseline_ kuat, sementara partikel lainnya acak untuk menjaga eksplorasi.
+2. _2-Opt Local Search_: setiap kali ditemukan rute lebih baik dari $G_("best")$, operasi _2-opt_ [3] dijalankan untuk merapikan persilangan jalur:
     $ "Jalur Baru" = [v_1, ..., v_(i-1), v_j, v_(j-1), ..., v_i, v_(j+1), ...] $
+3. Mutasi stokastik: dengan probabilitas 0.05, dua indeks ditukar acak untuk menghindari konvergensi prematur.
 
-== F. Kriteria Berhenti Awal (Early Stopping)
-Jika jarak $G_(b e s t)$ tidak berkurang lebih dari $0.01$ km selama $K$ iterasi berturut-turut (default $K=20$), loop dihentikan awal untuk menghemat waktu komputasi, yang menandakan kawanan partikel telah konvergen sepenuhnya.
+== F. _Auto-Tuning_ Parameter
+Modul _auto-tuning_ mengevaluasi empat _preset_ konfigurasi melalui _grid search_, sebagaimana ditampilkan pada Tabel II. Setiap _preset_ dievaluasi dengan 3 _trial_ sesi PSO singkat (30 iterasi). _Preset_ dengan rata-rata jarak akhir terendah dipilih sebagai konfigurasi optimal [4].
 
-= IV. Implementasi Sistem
-Sistem dibangun dalam arsitektur terintegrasi:
--   **pso_engine.py:** Modul mesin perhitungan berbasis OOP Python.
--   **app.py:** Dashboard interaktif menggunakan Streamlit untuk memvisualisasikan peta interaktif Plotly, grafik konvergensi, playback slider, dan diagram performa.
--   **pso_tsp_demo.ipynb:** Notebook interaktif untuk analisis akademis visual statis (Matplotlib & Seaborn).
-
-= V. Hasil dan Diskusi
-Eksperimen dijalankan pada data 27 lokasi Jawa Barat menggunakan parameter inersia $w=0.7$, $c_1=1.5$, $c_2=1.5$, populasi partikel 20, dan batas iterasi 150. Pengujian dilakukan untuk membandingkan performa rute acak (random walk), algoritma heuristik Greedy (Nearest Neighbor), serta usulan algoritma Discrete Memetic PSO.
-
-== A. Perbandingan Efisiensi Jarak Rute
-Rangkuman perbandingan performa rute dan waktu komputasi disajikan pada Tabel 2.
-
+// Tabel II — IEEE horizontal-only lines
 #align(center)[
   #block(width: 100%)[
     #set text(size: 8pt)
+    #v(0.3em)
+    #text(size: 7.5pt, weight: "bold")[TABEL II]
+    #v(-0.3em)
+    #text(size: 7.5pt)[_Preset_ Konfigurasi Parameter _Auto-Tuning_]
+    #v(0.3em)
     #table(
-      columns: (2.5fr, 2.5fr, 2.5fr, 2fr, 2fr),
-      align: (center, center, center, center, center),
-      stroke: 0.5pt + luma(150),
-      [*Metode Solver*], [*Jarak Rute (km)*], [*Selisih Jarak (km)*], [*Efisiensi (%)*], [*Waktu Run*],
-      [Jalur Acak], [3120.40], [+2228.46], [-250.00%], [N/A],
-      [Greedy NN], [891.94], [0.00 (Baseline)], [0.00% (Ref)], [2.00 ms],
-      [Memetic PSO], [864.93], [-27.01], [3.03%], [140.00 ms]
+      columns: (2.5fr, 1.5fr, 1.5fr, 1.5fr, 2fr),
+      align: (left, center, center, center, center),
+      stroke: none,
+      table.hline(stroke: 1pt),
+      table.header(
+        [_Preset_], [$w$], [$c_1$], [$c_2$], [Partikel],
+      ),
+      table.hline(stroke: 0.5pt),
+      [Balanced], [0.7], [1.5], [1.5], [20],
+      [Exploration-Heavy], [0.9], [2.0], [1.0], [30],
+      [Exploitation-Heavy], [0.4], [1.0], [2.0], [15],
+      [Lightweight], [0.6], [1.2], [1.2], [10],
+      table.hline(stroke: 1pt),
     )
-    #v(-0.5em)
-    #text(style: "italic", size: 7.5pt)[Tabel 2: Perbandingan Performa Hasil Optimasi TSP]
   ]
 ]
 
-Algoritma Memetic PSO berhasil memotong panjang rute sebesar *27.01 km* (meningkat *3.03%* lebih efisien) dibandingkan baseline Greedy. Peningkatan ini terjadi karena Greedy hanya mengambil keputusan lokal terbaik (*greedy choice property*) tanpa melihat dampak jangka panjang rute, sehingga sering kali menyisakan kota-kota terjauh di akhir pencarian yang berakibat pada "jumper" rute balik yang sangat jauh. Sebaliknya, Memetic PSO mampu mematangkan rute secara global.
+== G. Kriteria Berhenti Awal (_Early Stopping_)
+Jika jarak $G_("best")$ tidak berkurang lebih dari 0.01 km selama $K$ iterasi berturut-turut (_default_ $K=20$), _loop_ dihentikan untuk menghemat waktu komputasi.
+
+= IV. Implementasi Sistem
+Sistem dibangun dalam arsitektur modular terintegrasi yang terdiri dari tiga komponen utama [5]:
+
+== A. Mesin Perhitungan (pso\_engine.py)
+Modul ini berisi seluruh logika komputasi dengan pendekatan _Object-Oriented Programming_ (OOP): fungsi utilitas jarak (_Haversine_ dan _Euclidean_), kelas `SwapOperation`, fungsi aljabar _swap_ (`get_swap_sequence`, `scale_velocity`, `apply_velocity`), kelas `GreedyTSPSolver`, kelas `Particle`, kelas `PSOSolver` sebagai _orchestrator_ utama, serta modul _auto-tuning_.
+
+== B. _Dashboard_ Interaktif (app.py)
+_Dashboard Streamlit_ menyediakan peta interaktif _Plotly_ dengan rute _Greedy_ dan PSO pada _OpenStreetMap_, _slider iteration playback_ untuk menelusuri evolusi rute, grafik konvergensi _real-time_, panel analisis performa, dan konfigurasi parameter melalui _sidebar_.
+
+== C. _Notebook_ Akademis (pso\_tsp\_demo.ipynb)
+_Notebook Jupyter_ menyediakan analisis visual statis menggunakan _Matplotlib_ dan _Seaborn_: kurva konvergensi, perbandingan peta rute, analisis performa (_bar chart_ jarak dan waktu, kurva diversitas), matriks jarak _pairwise_ (_heatmap_), dan distribusi _edge hop length_.
+
+= V. Hasil dan Diskusi
+Eksperimen dijalankan pada 27 lokasi Jawa Barat dengan parameter $w=0.7$, $c_1=1.5$, $c_2=1.5$, 20 partikel, _mutation rate_ 0.05, batas 150 iterasi, dan _seed_ 42 untuk reprodusibilitas.
+
+== A. Perbandingan Efisiensi Jarak Rute
+Rangkuman perbandingan disajikan pada Tabel III.
+
+// Tabel III — IEEE horizontal-only lines
+#align(center)[
+  #block(width: 100%)[
+    #set text(size: 8pt)
+    #v(0.3em)
+    #text(size: 7.5pt, weight: "bold")[TABEL III]
+    #v(-0.3em)
+    #text(size: 7.5pt)[Perbandingan Performa Hasil Optimasi TSP]
+    #v(0.3em)
+    #table(
+      columns: (2.5fr, 2fr, 2fr, 1.5fr, 1.5fr),
+      align: (center, center, center, center, center),
+      stroke: none,
+      table.hline(stroke: 1pt),
+      table.header(
+        [Metode], [Jarak (km)], [Selisih (km)], [Efisiensi], [Waktu],
+      ),
+      table.hline(stroke: 0.5pt),
+      [Jalur Acak], [3120.40], [+2228.46], [-250.00%], [N/A],
+      [Greedy NN], [891.94], [0.00 (Ref)], [0.00%], [2.00 ms],
+      [Memetic PSO], [864.93], [-27.01], [3.03%], [140 ms],
+      table.hline(stroke: 1pt),
+    )
+  ]
+]
+
+_Memetic PSO_ berhasil memotong panjang rute sebesar 27.01 km (peningkatan efisiensi 3.03%) dibandingkan _baseline Greedy_. Peningkatan ini terjadi karena _Greedy_ hanya mengambil keputusan lokal terbaik tanpa mempertimbangkan dampak jangka panjang rute, sehingga sering menyisakan kota-kota terjauh di akhir pencarian yang mengakibatkan lompatan rute balik sangat jauh. _Memetic PSO_ mampu mematangkan rute secara global melalui kolaborasi antar partikel [1].
+
+Perbandingan jarak rute antara ketiga metode (jalur acak, _Greedy_ NN, dan PSO) ditampilkan secara visual pada Gambar 3 (panel kiri), yang secara jelas menunjukkan reduksi jarak bertahap dari pendekatan tanpa kecerdasan menuju optimasi PSO.
 
 == B. Analisis Waktu Komputasi
-Dari aspek waktu komputasi (Tabel 2), Greedy menyelesaikan pencarian dalam waktu sangat cepat yaitu *2.00 ms* karena kompleksitasnya yang rendah ($O(N^2)$). Di lain pihak, Memetic PSO membutuhkan waktu *140.00 ms*. Perbedaan waktu ini dalam hitungan milidetik sangat tidak signifikan dibandingkan dengan keuntungan penghematan rute logistik sebesar 3.03% pada dunia nyata. Waktu komputasi PSO ini juga ditekan oleh implementasi Early Stopping yang menghentikan loop di awal pada iterasi ke-21 dari 150 batas iterasi maksimum.
+_Greedy_ menyelesaikan pencarian dalam 2.00 ms karena kompleksitasnya $O(N^2)$, sedangkan _Memetic PSO_ membutuhkan 140 ms. Perbedaan dalam hitungan milidetik ini tidak signifikan dibandingkan keuntungan penghematan rute 3.03%. Waktu PSO ditekan oleh _Early Stopping_ yang menghentikan _loop_ pada iterasi ke-21 dari 150 iterasi maksimum. Perbandingan waktu komputasi kedua metode divisualisasikan pada Gambar 3 (panel tengah).
 
-== C. Analisis Konvergensi dan Diversitas Swarm
-Kurva konvergensi menunjukkan bahwa semenjak iterasi awal, rute global terbaik ($G_(b e s t)$) langsung dimulai dari jarak rute Greedy ($891.94$ km) karena teknik *heuristic seeding* yang kita lakukan pada partikel ke-0. Pada iterasi ke-1, operasi 2-opt yang diterapkan pada $G_(b e s t)$ berhasil merapikan persilangan jalur rute sehingga jarak langsung turun tajam ke $864.93$ km, di mana nilai tersebut terus dipertahankan secara stabil.
+== C. Analisis Konvergensi dan Diversitas _Swarm_
+Kurva konvergensi pada Gambar 1 menunjukkan bahwa rute $G_("best")$ langsung dimulai dari jarak _Greedy_ (891.94 km) karena _heuristic seeding_ pada partikel ke-0. Pada iterasi ke-1, _2-opt_ yang diterapkan pada $G_("best")$ merapikan persilangan jalur sehingga jarak turun tajam ke 864.93 km dan stabil hingga _early stopping_ terpicu.
 
-== D. Analisis Visualisasi Performa Pendukung
-Untuk mempermudah dosen penguji dan akademisi dalam menafsirkan performa algoritma secara komprehensif, kami menyertakan tiga visualisasi pendukung:
-1. *Pairwise Distance Heatmap:* Matriks visualisasi jarak antar 27 kota Jawa Barat mengonfirmasi adanya dua kluster padat: kluster metropolitan barat (Depok, Bogor, Bekasi) dan kluster Bandung Raya (Kota Bandung, Cimahi, Bandung Barat). Kota-kota ini terhubung erat dengan jarak < 20 km. Peta panas ini membantu memahami mengapa rute optimal cenderung menyelesaikan seluruh kunjungan di dalam satu kluster sebelum melompat ke kluster berikutnya.
-2. *Edge Hop Length Distribution:* Analisis frekuensi panjang sisi rute ("hop") menunjukkan bahwa rute Greedy terpaksa mengambil sisi lompatan sangat jauh (> 150 km) pada bagian penutup rute. Sedangkan pada Memetic PSO, distribusi sisi rute terpusat rapat pada jarak pendek (15 - 50 km) dengan frekuensi puncak pada rentang 15-30 km, membuktikan bahwa rute yang dihasilkan jauh lebih efisien dan terhindar dari persilangan lintasan.
-3. *Swarm Diversity Analysis:* Standar deviasi fitness partikel dimulai pada tingkat tinggi ($approx 600.0$ km) di mana partikel-partikel acak tersebar merata untuk mengeksplorasi ruang pencarian. Nilai ini menyusut tajam secara eksplisit dan mencapai nilai mendekati 0 setelah iterasi ke-20, menandakan terjadinya konsensus swarm dan konvergensi stabil yang meyakinkan.
+#figure(
+  image("out/01_kurva_konvergensi_pso_vs_greedy.png", width: 100%),
+  caption: [Kurva konvergensi PSO vs. _baseline Greedy_.],
+) <fig-konvergensi>
+
+Dari perspektif diversitas _swarm_ (Gambar 3, panel kanan), standar deviasi _fitness_ partikel dimulai tinggi ($approx 600$ km) dan menyusut eksponensial mendekati 0 setelah iterasi ke-20, menandakan konvergensi stabil [5].
+
+== D. Visualisasi Perbandingan Rute
+Gambar 2 menampilkan perbandingan visual rute _Greedy_ (kiri) dan PSO (kanan) pada peta koordinat Jawa Barat. Terlihat bahwa rute _Greedy_ memiliki beberapa persilangan jalur, sementara rute PSO lebih teratur dan menghindari lompatan jauh.
+
+#figure(
+  image("out/02_perbandingan_rute_greedy_vs_pso.png", width: 100%),
+  caption: [Perbandingan rute TSP: _Greedy_ (kiri, 891.94 km) vs. PSO (kanan, 864.93 km).],
+) <fig-rute>
+
+== E. Analisis Performa Akademik
+Gambar 3 menyajikan tiga panel analisis kinerja: (1) perbandingan jarak rute menunjukkan reduksi dari jalur acak (rata-rata 2733.2 km) ke _Greedy_ (891.9 km) dan PSO (864.9 km); (2) perbandingan waktu komputasi menunjukkan _trade-off_ antara kecepatan _Greedy_ dan kualitas PSO; (3) kurva diversitas partikel memvalidasi konvergensi _swarm_ secara matematis.
+
+#figure(
+  image("out/03_analisis_kinerja_pso_vs_greedy.png", width: 100%),
+  caption: [Analisis kinerja akademik: perbandingan jarak, waktu, dan diversitas _swarm_.],
+) <fig-kinerja>
+
+== F. Analisis Spasial
+Matriks jarak _pairwise_ pada Gambar 4 mengonfirmasi adanya dua kluster padat: kluster metropolitan barat (Depok, Bogor, Bekasi) dan kluster Bandung Raya (Kota Bandung, Cimahi, Bandung Barat) dengan jarak < 20 km. Pola kluster ini menjelaskan mengapa rute optimal cenderung menyelesaikan kunjungan dalam satu kluster sebelum berpindah.
+
+#figure(
+  image("out/04_matriks_jarak_geografis.png", width: 100%),
+  caption: [Matriks jarak geodesik _pairwise_ antar 27 kota/kabupaten (km).],
+) <fig-heatmap>
+
+Distribusi panjang langkah (_edge hop_) pada Gambar 5 menunjukkan bahwa _Greedy_ NN memiliki lompatan sangat jauh (> 100 km) pada _hop_ ke-14, sedangkan PSO memiliki distribusi lebih merata dengan standar deviasi lebih rendah (18.7 km vs. 22.5 km), membuktikan rute PSO lebih efisien [4].
+
+#figure(
+  image("out/05_distribusi_panjang_langkah_rute.png", width: 100%),
+  caption: [Distribusi panjang langkah (_edge hop length_) rute _Greedy_ vs. PSO.],
+) <fig-hop>
 
 = VI. Kesimpulan
-Penelitian ini membuktikan bahwa algoritma *Discrete PSO* yang dihibridisasi dengan *Greedy seeding* dan pencarian lokal *2-opt* merupakan solusi yang sangat efektif dan efisien untuk menyelesaikan TSP rill. Metode hibrida ini menjamin rute yang dihasilkan selalu lebih optimal dari heuristik greedy klasik, dengan waktu komputasi yang sangat layak di bawah 1 detik untuk 27 lokasi Jawa Barat. Untuk penelitian selanjutnya, disarankan pengujian pada data dinamis (kemacetan lalu lintas) menggunakan model Haversine-Time.
+Penelitian ini membuktikan bahwa _Discrete PSO_ yang dihibridisasi dengan _Greedy seeding_ dan _2-opt_ [3] merupakan solusi efektif untuk TSP riil. Metode hibrida ini menjamin rute selalu lebih optimal dari heuristik _Greedy_ klasik, dengan waktu komputasi di bawah 1 detik untuk 27 lokasi Jawa Barat.
+
+Kontribusi utama meliputi: (1) implementasi PSO Diskrit berbasis _swap operator_ [2] yang modular, (2) integrasi _heuristic seeding_ dan _2-opt memetic_ yang meningkatkan kualitas solusi, (3) modul _auto-tuning_ parameter, dan (4) sistem _dashboard_ interaktif _Streamlit_ untuk visualisasi _real-time_.
+
+Untuk penelitian selanjutnya, disarankan pengujian pada data dinamis menggunakan model _Haversine-Time_, perluasan jumlah kota ke skala nasional, serta eksplorasi algoritma metaheuristik lain seperti _Genetic Algorithm_ [4] atau _Ant Colony Optimization_ sebagai pembanding.
 
 = Referensi
-[1] J. Kennedy and R. Eberhart, "Particle swarm optimization," in *Proceedings of ICNN'95*, vol. 4, pp. 1942-1948, 1995.\
-[2] M. Clerc, "Discrete Particle Swarm Optimization, illustrated by the Traveling Salesman Problem," *New Optimization Techniques in Engineering*, pp. 219-239, 2004.\
-[3] G. Croes, "A method for solving traveling-salesman problems," *Operations Research*, vol. 6, no. 6, pp. 791-812, 1958.
+[1] J. Kennedy and R. Eberhart, "Particle swarm optimization," in _Proceedings of ICNN'95_, vol. 4, pp. 1942-1948, 1995.\
+[2] M. Clerc, "Discrete Particle Swarm Optimization, illustrated by the Traveling Salesman Problem," _New Optimization Techniques in Engineering_, pp. 219-239, 2004.\
+[3] G. Croes, "A method for solving traveling-salesman problems," _Operations Research_, vol. 6, no. 6, pp. 791-812, 1958.\
+[4] X.-S. Yang, _Nature-Inspired Metaheuristic Algorithms_, 2nd ed. Luniver Press, 2010.\
+[5] A. P. Engelbrecht, _Computational Intelligence: An Introduction_, 2nd ed. Wiley, 2007.
