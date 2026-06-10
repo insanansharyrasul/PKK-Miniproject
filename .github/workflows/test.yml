@@ -22,5 +22,11 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
+      - name: Lint (ruff)
+        run: ruff check pso_engine.py test_engine.py test_app.py
+
       - name: Run engine tests
         run: python test_engine.py
+
+      - name: Run app smoke tests
+        run: python test_app.py

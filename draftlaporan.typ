@@ -237,6 +237,34 @@ Modul _auto-tuning_ mengevaluasi empat _preset_ konfigurasi melalui _grid search
 == G. Kriteria Berhenti Awal (_Early Stopping_)
 Jika jarak $G_("best")$ tidak berkurang lebih dari 0.01 km selama $K$ iterasi berturut-turut (_default_ $K=20$), _loop_ dihentikan untuk menghemat waktu komputasi.
 
+== H. Prosedur Utama _Discrete Memetic PSO_
+
+Integrasi kelima teknik optimasi hibrida dari Seksi III.E dalam satu siklus iterasi ditampilkan berikut. Kompleksitas per iterasi didominasi oleh operasi _2-opt_ periodik: $O(N^2 dot N_p)$, dengan $N$ jumlah kota dan $N_p$ jumlah partikel; pembaruan kecepatan dan posisi sendiri hanya $O(N dot N_p)$.
+
+#align(center)[
+  #block(width: 100%, stroke: 0.5pt, inset: (x: 8pt, y: 6pt), radius: 2pt)[
+    #set par(leading: 0.88em)
+    #text(weight: "bold")[Algoritma 1:] _Discrete Memetic PSO untuk TSP_\
+    #v(3pt)
+    *Masukan:* koordinat $N$ kota, $w, c_1, c_2$, $N_p$ partikel, batas $T$ iterasi\
+    *Keluaran:* rute optimal $G_("best")$\
+    #v(3pt)
+    1.#h(0.5em) Semai partikel-0 dengan rute _Greedy_; inisialisasi $N_p - 1$ partikel acak\
+    2.#h(0.5em) Tetapkan $V_("cap") = floor(N\/2)$; evaluasi fitness awal; inisialisasi $G_("best")$\
+    3.#h(0.5em) *for* $t = 1$ *to* $T$ *do*\
+    4.#h(2em) *for* setiap partikel $i$ *do*\
+    5.#h(3.5em) Perbarui $V_i$ via persamaan kecepatan (III.D); klamping $|V_i| lt.eq V_("cap")$\
+    6.#h(3.5em) Terapkan mutasi adaptif $mu_t$; perbarui posisi $X_i$\
+    7.#h(3.5em) Jika $f(X_i) < f(P_("best"))$: perbarui $P_("best")$\
+    8.#h(2em) *end for*\
+    9.#h(2em) *if* $t$ habis dibagi 5: terapkan _2-opt_ pada 25% partikel _elite_\
+    10.#h(1.5em) *if* $"CoV"(f) < 0.01$: reinisialisasi 25% partikel terburuk\
+    11.#h(1.5em) Perbarui $G_("best")$; periksa _early stopping_\
+    12.#h(0.5em) *end for*\
+    13.#h(0.5em) *return* $G_("best")$
+  ]
+]
+
 = IV. Implementasi Sistem
 Sistem dibangun dalam arsitektur modular terintegrasi yang terdiri dari tiga komponen utama [5]:
 
@@ -283,6 +311,8 @@ Rangkuman perbandingan disajikan pada Tabel III.
 
 _Memetic PSO_ berhasil memotong panjang rute sebesar 103.86 km (peningkatan efisiensi 11.64%) dibandingkan _baseline Greedy_. Peningkatan ini terjadi karena _Greedy_ hanya mengambil keputusan lokal terbaik tanpa mempertimbangkan dampak jangka panjang rute, sehingga sering menyisakan kota-kota terjauh di akhir pencarian yang mengakibatkan lompatan rute balik sangat jauh. _Memetic PSO_ mampu mematangkan rute secara global melalui kolaborasi antar partikel [1].
 
+Terpilihnya _preset_ Exploitation-Heavy ($w=0.4$, $c_2=2.0$) dapat dijelaskan oleh karakteristik masalah: inisialisasi _Greedy_ sudah menyediakan titik awal berkualitas tinggi, sehingga eksplorasi luas (inersia besar) tidak diperlukan. Nilai $w$ rendah mengurangi momentum kecepatan sehingga partikel responsif terhadap $G_("best")$ terkini, sementara $c_2$ tinggi mendorong seluruh kawanan berkonvergensi cepat ke solusi terbaik global. Operasi _2-opt_ periodik mengambil alih peran eksplorasi lokal, sehingga PSO dapat fokus pada eksploitasi [2].
+
 Perbandingan jarak rute antara ketiga metode (jalur acak, _Greedy_ NN, dan PSO) ditampilkan secara visual pada @fig-kinerja (panel kiri), yang secara jelas menunjukkan reduksi jarak bertahap dari pendekatan tanpa kecerdasan menuju optimasi PSO.
 
 == B. Analisis Waktu Komputasi
@@ -299,7 +329,7 @@ Kurva konvergensi pada @fig-konvergensi menunjukkan bahwa rute $G_("best")$ lang
 Dari perspektif diversitas _swarm_ (@fig-kinerja, panel kanan), standar deviasi _fitness_ partikel dimulai tinggi ($approx 600$ km) dan menyusut bertahap mendekati 0 setelah iterasi ke-60, menandakan konvergensi stabil [5].
 
 == D. Visualisasi Perbandingan Rute
-@fig-rute menampilkan perbandingan visual rute _Greedy_ (kiri) dan PSO (kanan) pada peta koordinat Jawa Barat. Terlihat bahwa rute _Greedy_ memiliki beberapa persilangan jalur, sementara rute PSO lebih teratur dan menghindari lompatan jauh.
+@fig-rute menampilkan perbandingan visual rute _Greedy_ (kiri) dan PSO (kanan) pada peta koordinat Jawa Barat. Rute _Greedy_ menghasilkan beberapa persilangan jalur yang tidak efisien — terutama pada transisi antar kluster metropolitan barat (Depok–Bekasi) dan kluster Bandung Raya, serta lompatan balik ke wilayah tenggara (Tasikmalaya–Banjar) setelah melewati jalur utara. Sebaliknya, rute PSO membentuk pola yang lebih teratur: kunjungan diselesaikan secara geografis dalam satu wilayah sebelum berpindah ke wilayah berikutnya, membentuk jalur melingkar yang meminimalkan lompatan lintas-peta. Penghematan 103.86 km sebagian besar berasal dari eliminasi persilangan jalur ini oleh operasi _2-opt_ periodik yang diterapkan setiap 5 iterasi.
 
 #figure(
   image("out/02_perbandingan_rute_greedy_vs_pso.png", width: 100%),
