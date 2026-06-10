@@ -68,13 +68,13 @@
   columns: (1fr),
   inset: (x: 1.2cm),
   [
-    #text(weight: "bold", style: "italic")[Abstract]---This paper presents a hybrid Discrete Particle Swarm Optimization (PSO) combined with Greedy Nearest Neighbor seeding and 2-opt local search to solve the Traveling Salesperson Problem (TSP) on 27 real-world locations in West Java. The TSP is NP-hard; exact algorithms become intractable beyond 15 cities due to factorial state-space explosion. Our Memetic PSO seeds one particle with a Greedy route and periodically applies 2-opt sweeps to eliminate edge crossovers. An auto-tuning module selects optimal hyperparameters from four presets. The system is implemented as a modular Python pipeline with an interactive Streamlit dashboard and a Jupyter Notebook for academic analysis. Experiments show that the hybrid PSO reduces the Greedy baseline from 891.94 km to 864.93 km (3.03% improvement) in 140 ms, with early stopping triggered by swarm convergence validated through particle diversity metrics.
+    #text(weight: "bold", style: "italic")[Abstract]---This paper presents a hybrid Discrete Particle Swarm Optimization (PSO) combined with Greedy Nearest Neighbor seeding and 2-opt local search to solve the Traveling Salesperson Problem (TSP) on 27 real-world locations in West Java. The TSP is NP-hard; exact algorithms become intractable beyond 15 cities due to factorial state-space explosion. Our Memetic PSO seeds one particle with a Greedy route and periodically applies 2-opt sweeps to eliminate edge crossovers. An auto-tuning module selects optimal hyperparameters from four presets. The system is implemented as a modular Python pipeline with an interactive Streamlit dashboard and a Jupyter Notebook for academic analysis. Experiments show that the hybrid PSO reduces the Greedy baseline from 891.94 km to 788.08 km (11.64% improvement) in 9.79 s, with early stopping triggered by swarm convergence validated through particle diversity metrics.
     
     #v(0.4em)
     #text(weight: "bold", style: "italic")[Keywords]---Particle Swarm Optimization, Traveling Salesperson Problem, 2-opt, Greedy Nearest Neighbor.
     
     #v(0.8em)
-    #text(weight: "bold", style: "italic")[Abstrak]---Makalah ini menyajikan hibridisasi Particle Swarm Optimization (PSO) Diskrit dengan penyemaian Greedy Nearest Neighbor dan pencarian lokal 2-opt untuk menyelesaikan Traveling Salesperson Problem (TSP) pada 27 lokasi riil di Jawa Barat. TSP merupakan masalah NP-hard di mana algoritma eksak tidak layak secara komputasi pada skala besar akibat ledakan ruang keadaan faktorial. PSO Memetik kami menyemai satu partikel dengan rute Greedy dan secara periodik menerapkan 2-opt untuk menghilangkan persilangan jalur. Modul auto-tuning memilih hyperparameter optimal dari empat preset. Sistem diimplementasikan sebagai pipeline Python modular dengan dashboard Streamlit interaktif dan Jupyter Notebook untuk analisis akademis. Hasil eksperimen menunjukkan PSO hibrida mengoptimalkan baseline Greedy dari 891.94 km menjadi 864.93 km (peningkatan 3.03%) dalam 140 ms, dengan early stopping dipicu oleh konvergensi swarm yang divalidasi melalui metrik diversitas partikel.
+    #text(weight: "bold", style: "italic")[Abstrak]---Makalah ini menyajikan hibridisasi Particle Swarm Optimization (PSO) Diskrit dengan penyemaian Greedy Nearest Neighbor dan pencarian lokal 2-opt untuk menyelesaikan Traveling Salesperson Problem (TSP) pada 27 lokasi riil di Jawa Barat. TSP merupakan masalah NP-hard di mana algoritma eksak tidak layak secara komputasi pada skala besar akibat ledakan ruang keadaan faktorial. PSO Memetik kami menyemai satu partikel dengan rute Greedy dan secara periodik menerapkan 2-opt untuk menghilangkan persilangan jalur. Modul auto-tuning memilih hyperparameter optimal dari empat preset. Sistem diimplementasikan sebagai pipeline Python modular dengan dashboard Streamlit interaktif dan Jupyter Notebook untuk analisis akademis. Hasil eksperimen menunjukkan PSO hibrida mengoptimalkan baseline Greedy dari 891.94 km menjadi 788.08 km (peningkatan 11.64%) dalam 9.79 s, dengan early stopping dipicu oleh konvergensi swarm yang divalidasi melalui metrik diversitas partikel.
     
     #v(0.4em)
     #text(weight: "bold", style: "italic")[Kata Kunci]---Particle Swarm Optimization, Traveling Salesperson Problem, 2-opt, Greedy Nearest Neighbor.
@@ -273,41 +273,41 @@ Rangkuman perbandingan disajikan pada Tabel III.
         [Metode], [Jarak (km)], [Selisih (km)], [Efisiensi], [Waktu],
       ),
       table.hline(stroke: 0.5pt),
-      [Jalur Acak], [2733.20], [+1841.26], [-206.44%], [N/A],
+      [Jalur Acak], [2701.19], [+1809.25], [-202.83%], [N/A],
       [Greedy NN], [891.94], [0.00 (Ref)], [0.00%], [2.00 ms],
-      [Memetic PSO], [864.93], [-27.01], [3.03%], [140 ms],
+      [Memetic PSO], [788.08], [-103.86], [11.64%], [9.79 s],
       table.hline(stroke: 1pt),
     )
   ]
 ]
 
-_Memetic PSO_ berhasil memotong panjang rute sebesar 27.01 km (peningkatan efisiensi 3.03%) dibandingkan _baseline Greedy_. Peningkatan ini terjadi karena _Greedy_ hanya mengambil keputusan lokal terbaik tanpa mempertimbangkan dampak jangka panjang rute, sehingga sering menyisakan kota-kota terjauh di akhir pencarian yang mengakibatkan lompatan rute balik sangat jauh. _Memetic PSO_ mampu mematangkan rute secara global melalui kolaborasi antar partikel [1].
+_Memetic PSO_ berhasil memotong panjang rute sebesar 103.86 km (peningkatan efisiensi 11.64%) dibandingkan _baseline Greedy_. Peningkatan ini terjadi karena _Greedy_ hanya mengambil keputusan lokal terbaik tanpa mempertimbangkan dampak jangka panjang rute, sehingga sering menyisakan kota-kota terjauh di akhir pencarian yang mengakibatkan lompatan rute balik sangat jauh. _Memetic PSO_ mampu mematangkan rute secara global melalui kolaborasi antar partikel [1].
 
 Perbandingan jarak rute antara ketiga metode (jalur acak, _Greedy_ NN, dan PSO) ditampilkan secara visual pada @fig-kinerja (panel kiri), yang secara jelas menunjukkan reduksi jarak bertahap dari pendekatan tanpa kecerdasan menuju optimasi PSO.
 
 == B. Analisis Waktu Komputasi
-_Greedy_ menyelesaikan pencarian dalam 2.00 ms karena kompleksitasnya $O(N^2)$, sedangkan _Memetic PSO_ membutuhkan 140 ms. Perbedaan dalam hitungan milidetik ini tidak signifikan dibandingkan keuntungan penghematan rute 3.03%. Waktu PSO ditekan oleh _Early Stopping_ yang menghentikan _loop_ pada iterasi ke-21 dari 150 iterasi maksimum. Perbandingan waktu komputasi kedua metode divisualisasikan pada @fig-kinerja (panel tengah).
+_Greedy_ menyelesaikan pencarian dalam 2.00 ms karena kompleksitasnya $O(N^2)$, sedangkan _Memetic PSO_ membutuhkan 9.79 s. Selisih waktu ini merupakan _trade-off_ yang dapat diterima mengingat keuntungan penghematan rute 11.64%. Sebagian besar waktu PSO dihabiskan oleh operasi _2-opt_ periodik setiap 5 iterasi; _Early Stopping_ menghentikan _loop_ pada iterasi ke-60 dari 150 iterasi maksimum. Perbandingan waktu komputasi kedua metode divisualisasikan pada @fig-kinerja (panel tengah).
 
 == C. Analisis Konvergensi dan Diversitas _Swarm_
-Kurva konvergensi pada @fig-konvergensi menunjukkan bahwa rute $G_("best")$ langsung dimulai dari jarak _Greedy_ (891.94 km) karena _heuristic seeding_ pada partikel ke-0. Pada iterasi ke-1, _2-opt_ yang diterapkan periodik merapikan persilangan jalur sehingga jarak turun tajam ke 864.93 km dan stabil hingga _early stopping_ terpicu.
+Kurva konvergensi pada @fig-konvergensi menunjukkan bahwa rute $G_("best")$ langsung dimulai dari jarak _Greedy_ (891.94 km) karena _heuristic seeding_ pada partikel ke-0. Operasi _2-opt_ periodik secara bertahap mengeliminasi persilangan jalur, sehingga jarak turun progresif hingga 788.08 km ketika _early stopping_ terpicu pada iterasi ke-60.
 
 #figure(
   image("out/01_kurva_konvergensi_pso_vs_greedy.png", width: 100%),
   caption: [Kurva konvergensi PSO vs. _baseline Greedy_.],
 ) <fig-konvergensi>
 
-Dari perspektif diversitas _swarm_ (@fig-kinerja, panel kanan), standar deviasi _fitness_ partikel dimulai tinggi ($approx 600$ km) dan menyusut eksponensial mendekati 0 setelah iterasi ke-20, menandakan konvergensi stabil [5].
+Dari perspektif diversitas _swarm_ (@fig-kinerja, panel kanan), standar deviasi _fitness_ partikel dimulai tinggi ($approx 600$ km) dan menyusut bertahap mendekati 0 setelah iterasi ke-60, menandakan konvergensi stabil [5].
 
 == D. Visualisasi Perbandingan Rute
 @fig-rute menampilkan perbandingan visual rute _Greedy_ (kiri) dan PSO (kanan) pada peta koordinat Jawa Barat. Terlihat bahwa rute _Greedy_ memiliki beberapa persilangan jalur, sementara rute PSO lebih teratur dan menghindari lompatan jauh.
 
 #figure(
   image("out/02_perbandingan_rute_greedy_vs_pso.png", width: 100%),
-  caption: [Perbandingan rute TSP: _Greedy_ (kiri, 891.94 km) vs. PSO (kanan, 864.93 km).],
+  caption: [Perbandingan rute TSP: _Greedy_ (kiri, 891.94 km) vs. PSO (kanan, 788.08 km).],
 ) <fig-rute>
 
 == E. Analisis Performa Akademik
-@fig-kinerja menyajikan tiga panel analisis kinerja: (1) perbandingan jarak rute menunjukkan reduksi dari jalur acak (rata-rata 2733.2 km) ke _Greedy_ (891.94 km) dan PSO (864.93 km); (2) perbandingan waktu komputasi menunjukkan _trade-off_ antara kecepatan _Greedy_ dan kualitas PSO; (3) kurva diversitas partikel memvalidasi konvergensi _swarm_ secara matematis.
+@fig-kinerja menyajikan tiga panel analisis kinerja: (1) perbandingan jarak rute menunjukkan reduksi dari jalur acak (rata-rata 2701.2 km) ke _Greedy_ (891.94 km) dan PSO (788.08 km); (2) perbandingan waktu komputasi menunjukkan _trade-off_ antara kecepatan _Greedy_ dan kualitas PSO; (3) kurva diversitas partikel memvalidasi konvergensi _swarm_ secara matematis.
 
 #figure(
   image("out/03_analisis_kinerja_pso_vs_greedy.png", width: 100%),
@@ -322,7 +322,7 @@ Matriks jarak _pairwise_ pada @fig-heatmap mengonfirmasi adanya dua kluster pada
   caption: [Matriks jarak geodesik _pairwise_ antar 27 kota/kabupaten (km).],
 ) <fig-heatmap>
 
-Distribusi panjang langkah (_edge hop_) pada @fig-hop menunjukkan bahwa _Greedy_ NN memiliki lompatan sangat jauh (> 100 km) pada _hop_ ke-14, sedangkan PSO memiliki distribusi lebih merata dengan standar deviasi lebih rendah (18.7 km vs. 22.5 km), membuktikan rute PSO lebih efisien [4].
+Distribusi panjang langkah (_edge hop_) pada @fig-hop menunjukkan bahwa _Greedy_ NN memiliki lompatan sangat jauh (> 100 km) pada _hop_ ke-14, sedangkan PSO memiliki distribusi lebih merata dengan standar deviasi lebih rendah (12.4 km vs. 22.5 km), membuktikan rute PSO lebih efisien [4].
 
 #figure(
   image("out/05_distribusi_panjang_langkah_rute.png", width: 100%),
@@ -330,7 +330,7 @@ Distribusi panjang langkah (_edge hop_) pada @fig-hop menunjukkan bahwa _Greedy_
 ) <fig-hop>
 
 = VI. Kesimpulan
-Penelitian ini membuktikan bahwa _Discrete PSO_ yang dihibridisasi dengan _Greedy seeding_ dan _2-opt_ [3] merupakan solusi efektif untuk TSP riil. Metode hibrida ini menjamin rute selalu lebih optimal dari heuristik _Greedy_ klasik, dengan waktu komputasi di bawah 1 detik untuk 27 lokasi Jawa Barat.
+Penelitian ini membuktikan bahwa _Discrete PSO_ yang dihibridisasi dengan _Greedy seeding_ dan _2-opt_ [3] merupakan solusi efektif untuk TSP riil. Metode hibrida ini menjamin rute selalu lebih optimal dari heuristik _Greedy_ klasik, dengan peningkatan efisiensi 11.64% dan waktu komputasi ~10 detik untuk 27 lokasi Jawa Barat.
 
 Kontribusi utama meliputi: (1) implementasi PSO Diskrit berbasis _swap operator_ [2] yang modular dengan _type hints_ penuh dan 18 kasus uji terverifikasi; (2) lima teknik optimasi hibrida — _heuristic seeding_, _velocity cap_, _periodic 2-opt memetic_, _adaptive mutation decay_, dan _diversity-based partial restart_ — yang secara kolektif meningkatkan kualitas solusi dan mencegah konvergensi prematur; (3) modul _auto-tuning_ berbasis _grid search_ empat _preset_; dan (4) sistem _dashboard_ interaktif _Streamlit_ dengan _iteration playback_ dan analisis performa _real-time_.
 
