@@ -12,6 +12,7 @@
   weight: "regular",
 )
 #set par(justify: true, leading: 0.55em)
+#set figure(supplement: "Gambar")
 
 // Heading styles — bold only on headings, IEEE sizing
 #show heading.where(level: 1): it => [
@@ -192,12 +193,16 @@ Representasi diskrit PSO menggunakan aljabar _swap operator_ [2]:
 6. Pembaruan posisi: $X_(t+1) = X_t + V_(t+1)$.
 
 == E. Optimasi Hibrida & _Memetic_
-Dua teknik optimasi kunci dirancang:
+Lima teknik kunci dirancang untuk meningkatkan kualitas solusi dan mencegah konvergensi prematur:
 
-1. _Heuristic Seeding_: partikel ke-0 disemai dengan rute _Greedy_, menjamin pencarian dimulai dari _baseline_ kuat, sementara partikel lainnya acak untuk menjaga eksplorasi.
-2. _2-Opt Local Search_: setiap kali ditemukan rute lebih baik dari $G_("best")$, operasi _2-opt_ [3] dijalankan untuk merapikan persilangan jalur:
+1. _Heuristic Seeding_: partikel ke-0 disemai dengan rute _Greedy_, menjamin pencarian dimulai dari _baseline_ kuat, sementara partikel lainnya diinisialisasi acak untuk menjaga diversitas awal.
+2. _Velocity Cap_: panjang barisan _swap_ dibatasi hingga $floor(N\/2)$ operasi per iterasi, mencegah perubahan posisi yang terlalu ekstrem dan menstabilkan dinamika pencarian.
+3. _Periodic 2-Opt_: setiap 5 iterasi, pencarian lokal _2-opt_ [3] diterapkan pada 25% partikel _elite_ (jarak terbaik saat itu) untuk menghilangkan persilangan jalur secara periodik:
     $ "Jalur Baru" = [v_1, ..., v_(i-1), v_j, v_(j-1), ..., v_i, v_(j+1), ...] $
-3. Mutasi stokastik: dengan probabilitas 0.05, dua indeks ditukar acak untuk menghindari konvergensi prematur.
+4. _Adaptive Mutation Decay_: laju mutasi diturunkan secara linier terhadap kemajuan iterasi sehingga eksplorasi tinggi di awal berangsur bergeser menjadi eksploitasi di akhir:
+    $ mu_t = mu_0 dot (1 - 0.9 dot t\/T) $
+    di mana $mu_0 = 0.05$, $t$ adalah iterasi saat ini, dan $T$ adalah batas iterasi maksimum.
+5. _Diversity-Based Partial Restart_: jika koefisien variasi (_CoV_) jarak seluruh partikel turun di bawah ambang 1%, sebanyak 25% partikel dengan kinerja terburuk diinisialisasi ulang secara acak untuk memulihkan eksplorasi dan mencegah stagnasi prematur.
 
 == F. _Auto-Tuning_ Parameter
 Modul _auto-tuning_ mengevaluasi empat _preset_ konfigurasi melalui _grid search_, sebagaimana ditampilkan pada Tabel II. Setiap _preset_ dievaluasi dengan 3 _trial_ sesi PSO singkat (30 iterasi). _Preset_ dengan rata-rata jarak akhir terendah dipilih sebagai konfigurasi optimal [4].
@@ -236,16 +241,16 @@ Jika jarak $G_("best")$ tidak berkurang lebih dari 0.01 km selama $K$ iterasi be
 Sistem dibangun dalam arsitektur modular terintegrasi yang terdiri dari tiga komponen utama [5]:
 
 == A. Mesin Perhitungan (pso\_engine.py)
-Modul ini berisi seluruh logika komputasi dengan pendekatan _Object-Oriented Programming_ (OOP): fungsi utilitas jarak (_Haversine_ dan _Euclidean_), kelas `SwapOperation`, fungsi aljabar _swap_ (`get_swap_sequence`, `scale_velocity`, `apply_velocity`), kelas `GreedyTSPSolver`, kelas `Particle`, kelas `PSOSolver` sebagai _orchestrator_ utama, serta modul _auto-tuning_.
+Modul komputasi dirancang dengan prinsip _Object-Oriented Programming_ dan _type hints_ penuh. Komponen utamanya: (1) fungsi `haversine_distance()` dan `euclidean_distance()` sebagai dua metrik jarak yang dapat dipilih; (2) fungsi aljabar _swap_ `get_swap_sequence()`, `scale_velocity()` dengan klamping probabilitas ke $[0,1]$, dan `apply_velocity()`; (3) kelas `GreedyTSPSolver` sebagai _baseline_ $O(N^2)$; (4) kelas `Particle` yang merepresentasikan posisi rute, kecepatan _swap_, dan memori _pbest_; (5) kelas `PSOSolver` sebagai _orchestrator_ yang mengintegrasikan kelima teknik optimasi hibrida; dan (6) fungsi `auto_tune_pso()` untuk seleksi _preset_ otomatis berbasis _grid search_. Kebenaran seluruh komponen diverifikasi melalui 18 kasus uji pada `test_engine.py` dengan _pipeline_ CI/CD berbasis _GitHub Actions_.
 
 == B. _Dashboard_ Interaktif (app.py)
-_Dashboard Streamlit_ menyediakan peta interaktif _Plotly_ dengan rute _Greedy_ dan PSO pada _OpenStreetMap_, _slider iteration playback_ untuk menelusuri evolusi rute, grafik konvergensi _real-time_, panel analisis performa, dan konfigurasi parameter melalui _sidebar_.
+Antarmuka _Streamlit_ dibangun modular dengan fungsi terpisah untuk tiap komponen visual. _Sidebar_ menyediakan: unggah _dataset_ CSV dengan deteksi kolom otomatis, pemilihan jumlah kota, metrik jarak, mode Auto-Tune/Manual, parameter $w$, $c_1$, $c_2$, _mutation rate_, _early stopping_, dan kontrol _seed_ untuk reprodusibilitas. Panel utama menampilkan: peta interaktif _Plotly_ pada _OpenStreetMap_ dengan _toggle_ rute Greedy dan PSO, _slider iteration playback_ untuk menelusuri evolusi rute per iterasi, grafik konvergensi _real-time_, tabel perbandingan, dan tiga panel analisis performa akademik.
 
 == C. _Notebook_ Akademis (pso\_tsp\_demo.ipynb)
-_Notebook Jupyter_ menyediakan analisis visual statis menggunakan _Matplotlib_ dan _Seaborn_: kurva konvergensi, perbandingan peta rute, analisis performa (_bar chart_ jarak dan waktu, kurva diversitas), matriks jarak _pairwise_ (_heatmap_), dan distribusi _edge hop length_.
+_Notebook Jupyter_ menyajikan analisis visual statis lengkap menggunakan _Matplotlib_ dan _Seaborn_ dalam tujuh seksi: (1) landasan teori aljabar _swap operator_; (2) pemuatan dan verifikasi data; (3) eksekusi _baseline Greedy_; (4) _auto-tuning_ dan eksekusi PSO; (5) kurva konvergensi dan peta perbandingan rute; (6) tiga panel analisis kinerja (_bar chart_ jarak, waktu komputasi, kurva diversitas partikel); dan (7) analisis spasial berupa _heatmap_ matriks jarak _pairwise_ dan distribusi _edge hop length_.
 
 = V. Hasil dan Diskusi
-Eksperimen dijalankan pada 27 lokasi Jawa Barat dengan parameter $w=0.7$, $c_1=1.5$, $c_2=1.5$, 20 partikel, _mutation rate_ 0.05, batas 150 iterasi, dan _seed_ 42 untuk reprodusibilitas.
+Eksperimen dijalankan pada 27 lokasi Jawa Barat. Modul _auto-tuning_ memilih _preset_ Exploitation-Heavy dengan parameter $w=0.4$, $c_1=1.0$, $c_2=2.0$, 15 partikel, _mutation rate_ 0.05, batas 150 iterasi, dan _seed_ 42 untuk reprodusibilitas.
 
 == A. Perbandingan Efisiensi Jarak Rute
 Rangkuman perbandingan disajikan pada Tabel III.
@@ -268,7 +273,7 @@ Rangkuman perbandingan disajikan pada Tabel III.
         [Metode], [Jarak (km)], [Selisih (km)], [Efisiensi], [Waktu],
       ),
       table.hline(stroke: 0.5pt),
-      [Jalur Acak], [3120.40], [+2228.46], [-250.00%], [N/A],
+      [Jalur Acak], [2733.20], [+1841.26], [-206.44%], [N/A],
       [Greedy NN], [891.94], [0.00 (Ref)], [0.00%], [2.00 ms],
       [Memetic PSO], [864.93], [-27.01], [3.03%], [140 ms],
       table.hline(stroke: 1pt),
@@ -278,23 +283,23 @@ Rangkuman perbandingan disajikan pada Tabel III.
 
 _Memetic PSO_ berhasil memotong panjang rute sebesar 27.01 km (peningkatan efisiensi 3.03%) dibandingkan _baseline Greedy_. Peningkatan ini terjadi karena _Greedy_ hanya mengambil keputusan lokal terbaik tanpa mempertimbangkan dampak jangka panjang rute, sehingga sering menyisakan kota-kota terjauh di akhir pencarian yang mengakibatkan lompatan rute balik sangat jauh. _Memetic PSO_ mampu mematangkan rute secara global melalui kolaborasi antar partikel [1].
 
-Perbandingan jarak rute antara ketiga metode (jalur acak, _Greedy_ NN, dan PSO) ditampilkan secara visual pada Gambar 3 (panel kiri), yang secara jelas menunjukkan reduksi jarak bertahap dari pendekatan tanpa kecerdasan menuju optimasi PSO.
+Perbandingan jarak rute antara ketiga metode (jalur acak, _Greedy_ NN, dan PSO) ditampilkan secara visual pada @fig-kinerja (panel kiri), yang secara jelas menunjukkan reduksi jarak bertahap dari pendekatan tanpa kecerdasan menuju optimasi PSO.
 
 == B. Analisis Waktu Komputasi
-_Greedy_ menyelesaikan pencarian dalam 2.00 ms karena kompleksitasnya $O(N^2)$, sedangkan _Memetic PSO_ membutuhkan 140 ms. Perbedaan dalam hitungan milidetik ini tidak signifikan dibandingkan keuntungan penghematan rute 3.03%. Waktu PSO ditekan oleh _Early Stopping_ yang menghentikan _loop_ pada iterasi ke-21 dari 150 iterasi maksimum. Perbandingan waktu komputasi kedua metode divisualisasikan pada Gambar 3 (panel tengah).
+_Greedy_ menyelesaikan pencarian dalam 2.00 ms karena kompleksitasnya $O(N^2)$, sedangkan _Memetic PSO_ membutuhkan 140 ms. Perbedaan dalam hitungan milidetik ini tidak signifikan dibandingkan keuntungan penghematan rute 3.03%. Waktu PSO ditekan oleh _Early Stopping_ yang menghentikan _loop_ pada iterasi ke-21 dari 150 iterasi maksimum. Perbandingan waktu komputasi kedua metode divisualisasikan pada @fig-kinerja (panel tengah).
 
 == C. Analisis Konvergensi dan Diversitas _Swarm_
-Kurva konvergensi pada Gambar 1 menunjukkan bahwa rute $G_("best")$ langsung dimulai dari jarak _Greedy_ (891.94 km) karena _heuristic seeding_ pada partikel ke-0. Pada iterasi ke-1, _2-opt_ yang diterapkan pada $G_("best")$ merapikan persilangan jalur sehingga jarak turun tajam ke 864.93 km dan stabil hingga _early stopping_ terpicu.
+Kurva konvergensi pada @fig-konvergensi menunjukkan bahwa rute $G_("best")$ langsung dimulai dari jarak _Greedy_ (891.94 km) karena _heuristic seeding_ pada partikel ke-0. Pada iterasi ke-1, _2-opt_ yang diterapkan periodik merapikan persilangan jalur sehingga jarak turun tajam ke 864.93 km dan stabil hingga _early stopping_ terpicu.
 
 #figure(
   image("out/01_kurva_konvergensi_pso_vs_greedy.png", width: 100%),
   caption: [Kurva konvergensi PSO vs. _baseline Greedy_.],
 ) <fig-konvergensi>
 
-Dari perspektif diversitas _swarm_ (Gambar 3, panel kanan), standar deviasi _fitness_ partikel dimulai tinggi ($approx 600$ km) dan menyusut eksponensial mendekati 0 setelah iterasi ke-20, menandakan konvergensi stabil [5].
+Dari perspektif diversitas _swarm_ (@fig-kinerja, panel kanan), standar deviasi _fitness_ partikel dimulai tinggi ($approx 600$ km) dan menyusut eksponensial mendekati 0 setelah iterasi ke-20, menandakan konvergensi stabil [5].
 
 == D. Visualisasi Perbandingan Rute
-Gambar 2 menampilkan perbandingan visual rute _Greedy_ (kiri) dan PSO (kanan) pada peta koordinat Jawa Barat. Terlihat bahwa rute _Greedy_ memiliki beberapa persilangan jalur, sementara rute PSO lebih teratur dan menghindari lompatan jauh.
+@fig-rute menampilkan perbandingan visual rute _Greedy_ (kiri) dan PSO (kanan) pada peta koordinat Jawa Barat. Terlihat bahwa rute _Greedy_ memiliki beberapa persilangan jalur, sementara rute PSO lebih teratur dan menghindari lompatan jauh.
 
 #figure(
   image("out/02_perbandingan_rute_greedy_vs_pso.png", width: 100%),
@@ -302,7 +307,7 @@ Gambar 2 menampilkan perbandingan visual rute _Greedy_ (kiri) dan PSO (kanan) pa
 ) <fig-rute>
 
 == E. Analisis Performa Akademik
-Gambar 3 menyajikan tiga panel analisis kinerja: (1) perbandingan jarak rute menunjukkan reduksi dari jalur acak (rata-rata 2733.2 km) ke _Greedy_ (891.9 km) dan PSO (864.9 km); (2) perbandingan waktu komputasi menunjukkan _trade-off_ antara kecepatan _Greedy_ dan kualitas PSO; (3) kurva diversitas partikel memvalidasi konvergensi _swarm_ secara matematis.
+@fig-kinerja menyajikan tiga panel analisis kinerja: (1) perbandingan jarak rute menunjukkan reduksi dari jalur acak (rata-rata 2733.2 km) ke _Greedy_ (891.94 km) dan PSO (864.93 km); (2) perbandingan waktu komputasi menunjukkan _trade-off_ antara kecepatan _Greedy_ dan kualitas PSO; (3) kurva diversitas partikel memvalidasi konvergensi _swarm_ secara matematis.
 
 #figure(
   image("out/03_analisis_kinerja_pso_vs_greedy.png", width: 100%),
@@ -310,14 +315,14 @@ Gambar 3 menyajikan tiga panel analisis kinerja: (1) perbandingan jarak rute men
 ) <fig-kinerja>
 
 == F. Analisis Spasial
-Matriks jarak _pairwise_ pada Gambar 4 mengonfirmasi adanya dua kluster padat: kluster metropolitan barat (Depok, Bogor, Bekasi) dan kluster Bandung Raya (Kota Bandung, Cimahi, Bandung Barat) dengan jarak < 20 km. Pola kluster ini menjelaskan mengapa rute optimal cenderung menyelesaikan kunjungan dalam satu kluster sebelum berpindah.
+Matriks jarak _pairwise_ pada @fig-heatmap mengonfirmasi adanya dua kluster padat: kluster metropolitan barat (Depok, Bogor, Bekasi) dan kluster Bandung Raya (Kota Bandung, Cimahi, Bandung Barat) dengan jarak < 20 km. Pola kluster ini menjelaskan mengapa rute optimal cenderung menyelesaikan kunjungan dalam satu kluster sebelum berpindah.
 
 #figure(
   image("out/04_matriks_jarak_geografis.png", width: 100%),
   caption: [Matriks jarak geodesik _pairwise_ antar 27 kota/kabupaten (km).],
 ) <fig-heatmap>
 
-Distribusi panjang langkah (_edge hop_) pada Gambar 5 menunjukkan bahwa _Greedy_ NN memiliki lompatan sangat jauh (> 100 km) pada _hop_ ke-14, sedangkan PSO memiliki distribusi lebih merata dengan standar deviasi lebih rendah (18.7 km vs. 22.5 km), membuktikan rute PSO lebih efisien [4].
+Distribusi panjang langkah (_edge hop_) pada @fig-hop menunjukkan bahwa _Greedy_ NN memiliki lompatan sangat jauh (> 100 km) pada _hop_ ke-14, sedangkan PSO memiliki distribusi lebih merata dengan standar deviasi lebih rendah (18.7 km vs. 22.5 km), membuktikan rute PSO lebih efisien [4].
 
 #figure(
   image("out/05_distribusi_panjang_langkah_rute.png", width: 100%),
@@ -327,7 +332,7 @@ Distribusi panjang langkah (_edge hop_) pada Gambar 5 menunjukkan bahwa _Greedy_
 = VI. Kesimpulan
 Penelitian ini membuktikan bahwa _Discrete PSO_ yang dihibridisasi dengan _Greedy seeding_ dan _2-opt_ [3] merupakan solusi efektif untuk TSP riil. Metode hibrida ini menjamin rute selalu lebih optimal dari heuristik _Greedy_ klasik, dengan waktu komputasi di bawah 1 detik untuk 27 lokasi Jawa Barat.
 
-Kontribusi utama meliputi: (1) implementasi PSO Diskrit berbasis _swap operator_ [2] yang modular, (2) integrasi _heuristic seeding_ dan _2-opt memetic_ yang meningkatkan kualitas solusi, (3) modul _auto-tuning_ parameter, dan (4) sistem _dashboard_ interaktif _Streamlit_ untuk visualisasi _real-time_.
+Kontribusi utama meliputi: (1) implementasi PSO Diskrit berbasis _swap operator_ [2] yang modular dengan _type hints_ penuh dan 18 kasus uji terverifikasi; (2) lima teknik optimasi hibrida — _heuristic seeding_, _velocity cap_, _periodic 2-opt memetic_, _adaptive mutation decay_, dan _diversity-based partial restart_ — yang secara kolektif meningkatkan kualitas solusi dan mencegah konvergensi prematur; (3) modul _auto-tuning_ berbasis _grid search_ empat _preset_; dan (4) sistem _dashboard_ interaktif _Streamlit_ dengan _iteration playback_ dan analisis performa _real-time_.
 
 Untuk penelitian selanjutnya, disarankan pengujian pada data dinamis menggunakan model _Haversine-Time_, perluasan jumlah kota ke skala nasional, serta eksplorasi algoritma metaheuristik lain seperti _Genetic Algorithm_ [4] atau _Ant Colony Optimization_ sebagai pembanding.
 
