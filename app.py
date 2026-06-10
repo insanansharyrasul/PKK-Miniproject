@@ -1,607 +1,573 @@
-import streamlit as st
-import pandas as pd
+import random
+
 import numpy as np
+import pandas as pd
 import plotly.graph_objects as go
+import streamlit as st
+
 import pso_engine as engine
-import time
-import importlib
 
-# Force reload engine to prevent caching issues when editing pso_engine.py
-importlib.reload(engine)
+# ==========================================
+# Chart helpers
+# ==========================================
 
-# Set page configurations
-st.set_page_config(
-    page_title="PSO vs Greedy TSP Optimizer",
-    page_icon="🤖",
-    layout="wide",
-    initial_sidebar_state="expanded"
+_CHART_LAYOUT = dict(
+    paper_bgcolor="rgba(0,0,0,0)",
+    plot_bgcolor="rgba(0,0,0,0)",
+    font=dict(size=12),
+    margin=dict(l=40, r=20, t=40, b=40),
 )
 
-# Inject custom CSS for premium aesthetics
-st.markdown("""
+_COLOR_PSO         = "#3b82f6"   # blue accent — PSO throughout
+_COLOR_GREEDY_MAP  = "#1a1a2e"   # near-black — high contrast on light OSM map
+_COLOR_GREEDY_CHART = "#64748b"  # mid-gray — monochrome for charts/tables
+_COLOR_PLAY        = "#93c5fd"   # muted blue for playback map
+
+
+def _route_trace(
+    route: list[int],
+    coords: list[tuple],
+    city_names: list[str],
+    line_color: str,
+    marker_color: str,
+    marker_size: int,
+    line_width: float,
+    name: str,
+) -> go.Scattermapbox:
+    lats  = [coords[i][0] for i in route] + [coords[route[0]][0]]
+    lons  = [coords[i][1] for i in route] + [coords[route[0]][1]]
+    names = [city_names[i] for i in route] + [city_names[route[0]]]
+    return go.Scattermapbox(
+        lat=lats, lon=lons, mode="lines+markers",
+        marker=go.scattermapbox.Marker(size=marker_size, color=marker_color),
+        line=dict(width=line_width, color=line_color),
+        text=names, hoverinfo="text", name=name,
+    )
+
+
+def _build_mapbox_figure(
+    traces: list,
+    center_lat: float,
+    center_lon: float,
+    zoom: float = 7.8,
+    height: int = 500,
+    show_legend: bool = True,
+) -> go.Figure:
+    fig = go.Figure(data=traces)
+    layout = dict(
+        mapbox_style="open-street-map",
+        mapbox_zoom=zoom,
+        mapbox_center={"lat": center_lat, "lon": center_lon},
+        margin={"r": 0, "t": 0, "l": 0, "b": 0},
+        height=height,
+        paper_bgcolor="rgba(0,0,0,0)",
+    )
+    if show_legend:
+        layout["legend"] = dict(
+            yanchor="top", y=0.99, xanchor="left", x=0.01,
+            bgcolor="rgba(15,17,23,0.75)", font=dict(size=12),
+        )
+    else:
+        layout["showlegend"] = False
+    fig.update_layout(**layout)
+    return fig
+
+
+# ==========================================
+# Render functions
+# ==========================================
+
+def render_metrics(g_dist: float, p_dist: float, g_time: float, p_time: float) -> None:
+    improvement = ((g_dist - p_dist) / g_dist) * 100 if g_dist > 0 else 0
+    delta_km    = p_dist - g_dist
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        st.metric(
+            "Jarak Greedy (Nearest Neighbor)",
+            f"{g_dist:.2f} km",
+            delta=f"komputasi {g_time*1000:.1f} ms",
+            delta_color="off",
+        )
+    with col2:
+        st.metric(
+            "Jarak PSO",
+            f"{p_dist:.2f} km",
+            delta=f"{delta_km:+.2f} km vs Greedy",
+        )
+    with col3:
+        st.metric(
+            "Efisiensi Rute",
+            f"{improvement:.2f}%",
+            delta=f"waktu PSO {p_time:.2f} s",
+            delta_color="off",
+        )
+
+
+def render_map_section(
+    coords: list[tuple],
+    city_names: list[str],
+    p_route: list[int],
+    g_route: list[int],
+    p_history: list[float],
+    p_route_history: list[list[int]],
+    center_lat: float,
+    center_lon: float,
+) -> None:
+    st.markdown("#### Peta Rute")
+    col_a, col_b = st.columns(2)
+    show_pso    = col_a.checkbox("Rute PSO",    value=True)
+    show_greedy = col_b.checkbox("Rute Greedy", value=False)
+
+    traces = []
+    if show_greedy:
+        traces.append(_route_trace(
+            g_route, coords, city_names,
+            _COLOR_GREEDY_MAP, _COLOR_GREEDY_MAP, 7, 2.5, "Greedy",
+        ))
+    if show_pso:
+        traces.append(_route_trace(
+            p_route, coords, city_names,
+            _COLOR_PSO, _COLOR_PSO, 9, 3, "PSO",
+        ))
+
+    start_idx = p_route[0] if show_pso else g_route[0]
+    traces.append(go.Scattermapbox(
+        lat=[coords[start_idx][0]], lon=[coords[start_idx][1]], mode="markers",
+        marker=go.scattermapbox.Marker(size=14, color="#f8fafc"),
+        text=[f"Start / End: {city_names[start_idx]}"],
+        hoverinfo="text", showlegend=False,
+    ))
+
+    st.plotly_chart(
+        _build_mapbox_figure(traces, center_lat, center_lon, zoom=7.8, height=460),
+        use_container_width=True,
+    )
+
+    st.markdown("#### Evolusi Rute per Iterasi")
+    playback_iter = st.slider(
+        "Iterasi",
+        min_value=0, max_value=len(p_route_history) - 1,
+        value=len(p_route_history) - 1,
+        label_visibility="collapsed",
+    )
+    iter_route = p_route_history[playback_iter]
+    iter_dist  = p_history[playback_iter]
+
+    play_traces = [_route_trace(
+        iter_route, coords, city_names,
+        _COLOR_PLAY, _COLOR_PLAY, 8, 2.5, "Route",
+    )]
+    st.plotly_chart(
+        _build_mapbox_figure(play_traces, center_lat, center_lon, zoom=7.8, height=360, show_legend=False),
+        use_container_width=True,
+    )
+    st.caption(f"Iterasi {playback_iter} — {iter_dist:.2f} km")
+
+
+def render_analysis_section(
+    p_history: list[float],
+    g_dist: float,
+    p_dist: float,
+    g_time: float,
+    p_time: float,
+    num_cities: int,
+    w: float,
+    c1: float,
+    c2: float,
+    num_particles: int,
+    max_iter: int,
+    mutation_rate: float,
+    best_preset_name: str,
+) -> None:
+    # Convergence chart
+    st.markdown("#### Kurva Konvergensi")
+    fig_conv = go.Figure()
+    fig_conv.add_trace(go.Scatter(
+        y=p_history, mode="lines",
+        line=dict(color=_COLOR_PSO, width=2), name="PSO",
+    ))
+    fig_conv.add_trace(go.Scatter(
+        x=[0, len(p_history) - 1], y=[g_dist, g_dist], mode="lines",
+        line=dict(color=_COLOR_GREEDY_CHART, width=1.5, dash="dot"),
+        name=f"Greedy ({g_dist:.0f} km)",
+    ))
+    fig_conv.update_layout(
+        **_CHART_LAYOUT,
+        xaxis_title="Iterasi", yaxis_title="Jarak (km)", height=260,
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+        xaxis=dict(showgrid=True, gridcolor="rgba(148,163,184,0.1)"),
+        yaxis=dict(showgrid=True, gridcolor="rgba(148,163,184,0.1)"),
+    )
+    st.plotly_chart(fig_conv, use_container_width=True)
+
+    # Comparison table
+    st.markdown("#### Perbandingan Hasil")
+    st.table(pd.DataFrame({
+        "": ["Jarak rute", "Waktu komputasi", "Jumlah kota"],
+        "Greedy": [f"{g_dist:.2f} km", f"{g_time*1000:.2f} ms", str(num_cities)],
+        "PSO":    [f"{p_dist:.2f} km", f"{p_time:.3f} s",        str(num_cities)],
+    }).set_index(""))
+
+    # PSO config
+    st.markdown("#### Konfigurasi PSO")
+    st.dataframe(
+        pd.DataFrame({
+            "Parameter": ["Preset", "w (inertia)", "c1 (cognitive)", "c2 (social)",
+                          "Partikel", "Maks iterasi", "Mutation rate awal"],
+            "Nilai": [best_preset_name, f"{w:.2f}", f"{c1:.2f}", f"{c2:.2f}",
+                      str(num_particles), str(max_iter), f"{mutation_rate:.2f}"],
+        }),
+        use_container_width=True, hide_index=True,
+    )
+
+    # Explanation
+    with st.expander("Mengapa PSO menghasilkan rute lebih baik?"):
+        st.markdown(
+            "Greedy hanya memilih kota terdekat di setiap langkah — keputusan lokal yang sering "
+            "menghasilkan jalur panjang di akhir rute.\n\n"
+            "PSO memelihara banyak solusi (partikel) sekaligus dan membiarkan mereka saling "
+            "berbagi informasi tentang rute terbaik yang pernah ditemukan. "
+            "Kombinasi *personal best* dan *global best* mendorong eksplorasi ruang solusi "
+            "secara global, bukan hanya lokal. "
+            "2-opt local search yang dijalankan secara periodik membantu memoles rute "
+            "dengan menghilangkan segmen yang bersilangan."
+        )
+
+    if "tuning_log" in st.session_state:
+        with st.expander("Hasil Auto-Tuning"):
+            log_df = pd.DataFrame(st.session_state["tuning_log"])
+            st.dataframe(
+                log_df[["name", "w", "c1", "c2", "num_particles", "score"]].rename(columns={
+                    "name": "Preset", "num_particles": "Partikel", "score": "Skor (km)",
+                }),
+                use_container_width=True, hide_index=True,
+            )
+            st.caption("Skor lebih kecil = rute lebih pendek.")
+
+
+def render_academic_section(
+    coords: list[tuple],
+    g_dist: float,
+    p_dist: float,
+    g_time: float,
+    p_time: float,
+    metric_choice: str,
+) -> None:
+    st.divider()
+    st.markdown("#### Analisis Performa")
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+        random_dists = []
+        for _ in range(30):
+            perm = list(range(len(coords)))
+            random.shuffle(perm)
+            random_dists.append(engine.calculate_route_distance(perm, coords, metric_choice))
+        avg_random = float(np.mean(random_dists))
+
+        fig = go.Figure([go.Bar(
+            x=["Acak (avg)", "Greedy", "PSO"],
+            y=[avg_random, g_dist, p_dist],
+            text=[f"{avg_random:.0f}", f"{g_dist:.0f}", f"{p_dist:.0f}"],
+            textposition="auto",
+            marker_color=["#334155", _COLOR_GREEDY_CHART, _COLOR_PSO],
+        )])
+        fig.update_layout(
+            **_CHART_LAYOUT,
+            title="Jarak Rute (km)", height=300, showlegend=False,
+            yaxis=dict(showgrid=True, gridcolor="rgba(148,163,184,0.1)"),
+        )
+        st.plotly_chart(fig, use_container_width=True)
+
+    with col2:
+        fig = go.Figure([go.Bar(
+            x=["Greedy", "PSO"],
+            y=[g_time * 1000, p_time * 1000],
+            text=[f"{g_time*1000:.1f}", f"{p_time*1000:.0f}"],
+            textposition="auto",
+            marker_color=[_COLOR_GREEDY_CHART, _COLOR_PSO],
+        )])
+        fig.update_layout(
+            **_CHART_LAYOUT,
+            title="Waktu Komputasi (ms)", height=300, showlegend=False,
+            yaxis=dict(showgrid=True, gridcolor="rgba(148,163,184,0.1)"),
+        )
+        st.plotly_chart(fig, use_container_width=True)
+
+    with col3:
+        if "pso_diversity" in st.session_state:
+            fig = go.Figure()
+            fig.add_trace(go.Scatter(
+                y=st.session_state["pso_diversity"], mode="lines",
+                line=dict(color=_COLOR_PSO, width=2),
+            ))
+            fig.update_layout(
+                **_CHART_LAYOUT,
+                title="Diversitas Swarm",
+                xaxis_title="Iterasi", yaxis_title="Std Dev (km)",
+                height=300, showlegend=False,
+                xaxis=dict(showgrid=True, gridcolor="rgba(148,163,184,0.1)"),
+                yaxis=dict(showgrid=True, gridcolor="rgba(148,163,184,0.1)"),
+            )
+            st.plotly_chart(fig, use_container_width=True)
+
+
+# ==========================================
+# App
+# ==========================================
+
+st.set_page_config(
+    page_title="TSP Optimizer — PSO vs Greedy",
+    page_icon="🗺️",
+    layout="wide",
+    initial_sidebar_state="expanded",
+)
+
+st.html("""
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
-    
-    /* Global Styles */
-    html, body, [class*="css"] {
-        font-family: 'Outfit', sans-serif;
-    }
-    
-    /* Gradient Banner */
-    .banner {
-        background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 50%, #1e3a8a 100%);
-        padding: 2.5rem 2rem;
-        border-radius: 16px;
-        color: white;
-        text-align: center;
-        margin-bottom: 2.5rem;
-        box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.3);
-    }
-    .banner h1 {
-        font-weight: 700;
-        font-size: 2.5rem;
-        margin-bottom: 0.5rem;
-        letter-spacing: -0.025em;
-        color: white !important;
-    }
-    .banner p {
-        font-size: 1.1rem;
-        opacity: 0.9;
-        font-weight: 300;
-    }
-    
-    /* Modern Card Overrides */
-    .card {
-        background-color: white;
-        border-radius: 12px;
-        padding: 1.5rem;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-        border: 1px solid #e2e8f0;
-        margin-bottom: 1.5rem;
-    }
-    
-    /* Metric Card Custom Styles */
-    .metric-container {
-        display: flex;
-        gap: 1.5rem;
-        margin-bottom: 2rem;
-    }
-    .m-card {
-        flex: 1;
-        padding: 1.25rem 1.5rem;
-        border-radius: 12px;
-        color: #1e293b;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-        border-left: 6px solid #e2e8f0;
-    }
-    .m-card-title {
-        font-size: 0.875rem;
-        text-transform: uppercase;
-        font-weight: 600;
-        color: #64748b;
-        letter-spacing: 0.05em;
-        margin-bottom: 0.5rem;
-    }
-    .m-card-value {
-        font-size: 1.75rem;
-        font-weight: 700;
-        letter-spacing: -0.025em;
-    }
-    .m-card-sub {
-        font-size: 0.8rem;
-        color: #64748b;
-        margin-top: 0.25rem;
-    }
-    .pso-theme {
-        border-left-color: #2563eb;
-        background: linear-gradient(to right, #eff6ff, #ffffff);
-    }
-    .greedy-theme {
-        border-left-color: #dc2626;
-        background: linear-gradient(to right, #fef2f2, #ffffff);
-    }
-    .improve-theme {
-        border-left-color: #16a34a;
-        background: linear-gradient(to right, #f0fdf4, #ffffff);
-    }
+/* ---- Metric cards ---- */
+[data-testid="stMetric"] {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 6px;
+    padding: 1rem 1.25rem;
+}
+[data-testid="stMetricValue"] {
+    font-size: 1.5rem !important;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+}
+[data-testid="stMetricLabel"] > div {
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    opacity: 0.55;
+}
+
+/* ---- Expander ---- */
+[data-testid="stExpander"] summary {
+    font-size: 0.9rem;
+    font-weight: 500;
+    opacity: 0.75;
+}
+
+/* ---- Divider ---- */
+hr {
+    border-color: rgba(255,255,255,0.08) !important;
+    margin: 1.25rem 0;
+}
+
+/* ---- Section h4 ---- */
+h4 {
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    margin-bottom: 0.5rem;
+}
 </style>
-""", unsafe_allow_html=True)
+""")
 
-# Main Dashboard Banner
-st.markdown("""
-<div class="banner">
-    <h1>Optimasi Rute TSP Menggunakan Discrete PSO</h1>
-    <p>Penerapan komputasi cerdas berbasis swarm intelligence untuk rute optimal di Jawa Barat</p>
-</div>
-""", unsafe_allow_html=True)
+# Header
+st.markdown("## TSP Optimizer — Discrete PSO vs Greedy")
+st.caption(
+    "Perbandingan Particle Swarm Optimization dengan Greedy Nearest Neighbor "
+    "untuk Travelling Salesman Problem · Data Kota/Kabupaten Jawa Barat"
+)
+st.divider()
 
 # ==========================================
-# Sidebar Configuration
+# Sidebar
 # ==========================================
-st.sidebar.image("https://img.icons8.com/clouds/100/swarm.png", width=80)
-st.sidebar.markdown("### ⚙️ Pengaturan Solver")
+st.sidebar.markdown("### Pengaturan")
 
-# 1. Load data from the West Java dataset
+# Dataset
+uploaded_file = st.sidebar.file_uploader(
+    "Dataset CSV (opsional)",
+    type=["csv"],
+    help="Kolom yang dikenali: nama kota, latitude, longitude. "
+         "Kosongkan untuk memakai dataset Jawa Barat bawaan.",
+)
 try:
-    df_raw = engine.load_and_filter_data("kabupaten_kota_jawa_barat.csv")
-    region_choice = 'jabar' # Kept as constant for map zoom logic
+    source = uploaded_file if uploaded_file is not None else "kabupaten_kota_jawa_barat.csv"
+    df_raw = engine.load_and_filter_data(source)
 except Exception as e:
     st.error(f"Gagal memuat dataset: {e}")
-    st.warning("💡 **Tips:** Jika error berkaitan dengan kolom `'id'` atau caching, silakan restart server Streamlit Anda (tekan **Ctrl+C** di terminal tempat Streamlit berjalan, lalu jalankan kembali **`streamlit run app.py`**) untuk membersihkan cache impor Python.")
     st.stop()
 
-# 2. Number of cities sampler
+# City count
 max_cities = len(df_raw)
 num_cities = st.sidebar.slider(
-    "🔢 Batasi Jumlah Kota",
-    min_value=5,
-    max_value=max_cities,
-    value=max_cities,
-    help="Gunakan jumlah kota yang lebih kecil untuk mempercepat running & demo."
+    "Jumlah kota", min_value=5, max_value=max_cities, value=max_cities,
+    help="Kurangi untuk demo yang lebih cepat.",
 )
+df         = df_raw.iloc[:num_cities].reset_index(drop=True)
+coords     = list(zip(df["lat"], df["long"]))
+city_names = df["name"].tolist()
+st.sidebar.caption(f"{num_cities} kota dipilih")
 
-# Slice dataset
-df = df_raw.iloc[:num_cities].reset_index(drop=True)
-coords = list(zip(df['lat'], df['long']))
-city_names = df['name'].tolist()
-
-# Show statistics in sidebar
-st.sidebar.markdown(f"**Total Kota Terpilih:** `{num_cities}`")
-
-# 3. Distance Metric
+# Distance metric
 metric_choice = st.sidebar.selectbox(
-    "📏 Metrik Jarak",
+    "Metrik jarak",
     options=["haversine", "euclidean"],
-    format_func=lambda x: "Haversine (Rute Bola Bumi - km)" if x == "haversine" else "Euclidean (Jarak 2D Rata)"
+    format_func=lambda x: "Haversine (km, bola bumi)" if x == "haversine" else "Euclidean (2D)",
 )
 
-# 4. Parameter Tuning Mode
+st.sidebar.divider()
+st.sidebar.markdown("### Parameter PSO")
+
 tune_mode = st.sidebar.radio(
-    "🧠 Mode Parameter PSO",
-    options=["Auto-Tune (Direkomendasikan)", "Manual Tuning"]
+    "Mode",
+    options=["Auto-Tune", "Manual"],
+    horizontal=True,
 )
 
-# Default parameter configurations
 w, c1, c2, num_particles, max_iter = 0.7, 1.5, 1.5, 20, 100
-mutation_rate = 0.05
+mutation_rate    = 0.05
 best_preset_name = "Default"
-preset_desc = ""
 
-if tune_mode == "Auto-Tune (Direkomendasikan)":
-    st.sidebar.info("Auto-Tuning akan melakukan evaluasi cepat untuk memilih parameter terbaik.")
-    if st.sidebar.button("⚙️ Jalankan Auto-Tune"):
-        with st.spinner("Mengevaluasi preset parameter..."):
+if tune_mode == "Auto-Tune":
+    if st.sidebar.button("Jalankan Auto-Tune"):
+        with st.spinner("Mengevaluasi preset..."):
             best_config, tuning_log = engine.auto_tune_pso(coords, metric_choice)
-            st.session_state['auto_pso_params'] = best_config
-            st.session_state['tuning_log'] = tuning_log
-            st.sidebar.success(f"Tuned: {best_config['name']}")
-            
-    if 'auto_pso_params' in st.session_state:
-        cfg = st.session_state['auto_pso_params']
-        best_preset_name = cfg['name']
-        w, c1, c2, num_particles = cfg['w'], cfg['c1'], cfg['c2'], cfg['num_particles']
-        preset_desc = cfg['description']
-        st.sidebar.markdown(f"**Preset Aktif:** `{best_preset_name}`")
-        st.sidebar.markdown(f"<small>{preset_desc}</small>", unsafe_allow_html=True)
+            st.session_state["auto_pso_params"] = best_config
+            st.session_state["tuning_log"]      = tuning_log
+            st.sidebar.success(f"Preset terpilih: {best_config['name']}")
+    if "auto_pso_params" in st.session_state:
+        cfg              = st.session_state["auto_pso_params"]
+        best_preset_name = cfg["name"]
+        w, c1, c2, num_particles = cfg["w"], cfg["c1"], cfg["c2"], cfg["num_particles"]
+        st.sidebar.caption(f"Aktif: **{best_preset_name}** — {cfg['description']}")
 else:
-    # Manual Sliders
-    num_particles = st.sidebar.slider("👥 Jumlah Partikel", 10, 40, 20, step=5)
-    max_iter = st.sidebar.slider("🔄 Maksimum Iterasi", 30, 200, 100, step=10)
-    w = st.sidebar.slider("🧱 Inertia Weight (w)", 0.3, 1.0, 0.7, step=0.05)
-    c1 = st.sidebar.slider("👤 Cognitive Coefficient (c1)", 0.5, 2.5, 1.5, step=0.1)
-    c2 = st.sidebar.slider("👥 Social Coefficient (c2)", 0.5, 2.5, 1.5, step=0.1)
-    mutation_rate = st.sidebar.slider("🧬 Mutation Rate", 0.0, 0.3, 0.05, step=0.01)
+    num_particles = st.sidebar.slider("Partikel",        10,  40,  20, step=5)
+    max_iter      = st.sidebar.slider("Maks iterasi",    30, 200, 100, step=10)
+    w             = st.sidebar.slider("Inertia (w)",    0.3, 1.0, 0.7, step=0.05)
+    c1            = st.sidebar.slider("Cognitive (c1)", 0.5, 2.5, 1.5, step=0.1)
+    c2            = st.sidebar.slider("Social (c2)",    0.5, 2.5, 1.5, step=0.1)
+    mutation_rate = st.sidebar.slider("Mutation rate",  0.0, 0.3, 0.05, step=0.01)
 
-st.sidebar.markdown("---")
-st.sidebar.markdown("### 🛑 Pengendalian Swarm (Early Stopping)")
-enable_early_stopping = st.sidebar.checkbox("Aktifkan Early Stopping", value=True)
+st.sidebar.divider()
+enable_early_stopping = st.sidebar.checkbox("Early stopping", value=True)
 early_stopping_rounds = None
 if enable_early_stopping:
-    early_stopping_rounds = st.sidebar.slider("Batas Iterasi Tanpa Peningkatan", 5, 50, 20, step=5)
+    early_stopping_rounds = st.sidebar.slider("Toleransi (iterasi tanpa peningkatan)", 5, 50, 20, step=5)
 
-# Run button
-run_pso = st.sidebar.button("🚀 Run Optimasi TSP", use_container_width=True)
+st.sidebar.divider()
+pso_seed_input = st.sidebar.number_input(
+    "Seed (-1 = acak)",
+    min_value=-1, max_value=9999, value=42, step=1,
+    help="Seed yang sama menghasilkan rute identik — berguna untuk demo.",
+)
+seed_value = None if pso_seed_input == -1 else int(pso_seed_input)
+
+run_pso = st.sidebar.button("Run", use_container_width=True, type="primary")
 
 # ==========================================
-# Main Layout Logic
+# Computation
 # ==========================================
 col_map, col_analysis = st.columns([3, 2])
 
-# Initialize session state for solutions
-if 'pso_solved' not in st.session_state:
-    st.session_state['pso_solved'] = False
-    st.session_state['greedy_solved'] = False
+if "pso_solved" not in st.session_state:
+    st.session_state["pso_solved"]    = False
+    st.session_state["greedy_solved"] = False
 
-# Run calculations when button is clicked
 if run_pso:
-    # 1. Solve Greedy (Instant)
     greedy_solver = engine.GreedyTSPSolver(coords, metric_choice)
     g_route, g_distance, g_time = greedy_solver.solve()
-    st.session_state['greedy_route'] = g_route
-    st.session_state['greedy_distance'] = g_distance
-    st.session_state['greedy_time'] = g_time
-    st.session_state['greedy_solved'] = True
-    
-    # 2. Solve PSO (Show progress bar)
+    st.session_state.update({
+        "greedy_route": g_route, "greedy_distance": g_distance,
+        "greedy_time": g_time, "greedy_solved": True,
+    })
+
     progress_bar = st.progress(0, text="Menginisialisasi swarm...")
-    status_text = st.empty()
-    
-    def pso_callback(it, max_it, dist):
-        pct = int((it / max_it) * 100)
-        progress_bar.progress(pct, text=f"Iterasi {it}/{max_it} | Best Jarak: {dist:.2f} km")
-        
+    status_text  = st.empty()
+
+    def pso_callback(it: int, max_it: int, dist: float) -> None:
+        progress_bar.progress(
+            int((it / max_it) * 100),
+            text=f"Iterasi {it}/{max_it} — best: {dist:.2f} km",
+        )
+
     pso_solver = engine.PSOSolver(
-        coords=coords,
-        metric=metric_choice,
-        num_particles=num_particles,
-        max_iter=max_iter,
-        w=w,
-        c1=c1,
-        c2=c2,
-        mutation_rate=mutation_rate,
-        seed=42,
-        early_stopping_rounds=early_stopping_rounds
+        coords=coords, metric=metric_choice, num_particles=num_particles,
+        max_iter=max_iter, w=w, c1=c1, c2=c2, mutation_rate=mutation_rate,
+        seed=seed_value, early_stopping_rounds=early_stopping_rounds,
     )
-    st.session_state['max_iter'] = max_iter
-    st.session_state['early_stopping_rounds'] = early_stopping_rounds
-    
+    st.session_state["max_iter"]             = max_iter
+    st.session_state["early_stopping_rounds"] = early_stopping_rounds
+
     pso_route, pso_distance, pso_time = pso_solver.solve(progress_callback=pso_callback)
-    
-    st.session_state['pso_route'] = pso_route
-    st.session_state['pso_distance'] = pso_distance
-    st.session_state['pso_time'] = pso_time
-    st.session_state['pso_history'] = pso_solver.history
-    st.session_state['pso_route_history'] = pso_solver.route_history
-    st.session_state['pso_diversity'] = pso_solver.diversity_history
-    st.session_state['pso_solved'] = True
-    
+    st.session_state.update({
+        "pso_route": pso_route, "pso_distance": pso_distance, "pso_time": pso_time,
+        "pso_history": pso_solver.history, "pso_route_history": pso_solver.route_history,
+        "pso_diversity": pso_solver.diversity_history, "pso_solved": True,
+    })
     status_text.empty()
     progress_bar.empty()
 
 # ==========================================
-# Rendering Output UI
+# Results
 # ==========================================
-if st.session_state['pso_solved'] and st.session_state['greedy_solved']:
-    p_dist = st.session_state['pso_distance']
-    g_dist = st.session_state['greedy_distance']
-    p_history = st.session_state['pso_history']
-    
-    # Early Stopping Notification
+if st.session_state["pso_solved"] and st.session_state["greedy_solved"]:
+    p_dist          = st.session_state["pso_distance"]
+    g_dist          = st.session_state["greedy_distance"]
+    p_history       = st.session_state["pso_history"]
+    p_route         = st.session_state["pso_route"]
+    g_route         = st.session_state["greedy_route"]
+    p_route_history = st.session_state["pso_route_history"]
+    p_time          = st.session_state["pso_time"]
+    g_time          = st.session_state["greedy_time"]
+
     actual_iters = len(p_history) - 1
-    target_iters = st.session_state.get('max_iter', 100)
-    es_rounds = st.session_state.get('early_stopping_rounds', None)
+    target_iters = st.session_state.get("max_iter", 100)
+    es_rounds    = st.session_state.get("early_stopping_rounds", None)
     if es_rounds is not None and actual_iters < target_iters:
-        st.success(f"🛑 **Early Stopping Dipicu:** Proses optimasi dihentikan lebih awal pada iterasi **{actual_iters}** karena rute tidak mengalami peningkatan jarak selama **{es_rounds}** iterasi berturut-turut (konvergen).")
-    p_time = st.session_state['pso_time']
-    g_time = st.session_state['greedy_time']
-    p_route = st.session_state['pso_route']
-    g_route = st.session_state['greedy_route']
-    p_history = st.session_state['pso_history']
-    p_route_history = st.session_state['pso_route_history']
-    
-    improvement = ((g_dist - p_dist) / g_dist) * 100 if g_dist > 0 else 0
-    
-    # Render Metrics Section
-    st.markdown(f"""
-    <div class="metric-container">
-        <div class="m-card greedy-theme">
-            <div class="m-card-title">🔴 Greedy Baseline</div>
-            <div class="m-card-value">{g_dist:.2f} km</div>
-            <div class="m-card-sub">Waktu: {g_time*1000:.2f} ms (Nearest Neighbor)</div>
-        </div>
-        <div class="m-card pso-theme">
-            <div class="m-card-title">🔵 Optimasi PSO</div>
-            <div class="m-card-value">{p_dist:.2f} km</div>
-            <div class="m-card-sub">Waktu: {p_time:.3f} s (Swarm Intelligence)</div>
-        </div>
-        <div class="m-card improve-theme">
-            <div class="m-card-title">🟢 Efisiensi Rute</div>
-            <div class="m-card-value">{improvement:.2f}% Lebih Pendek</div>
-            <div class="m-card-sub">Jalur PSO lebih optimal dibanding Greedy</div>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    # --- Map Column ---
+        st.info(
+            f"Early stopping pada iterasi **{actual_iters}** "
+            f"(tidak ada peningkatan selama {es_rounds} iterasi)."
+        )
+
+    render_metrics(g_dist, p_dist, g_time, p_time)
+
+    center_lat = float(np.mean([c[0] for c in coords]))
+    center_lon = float(np.mean([c[1] for c in coords]))
+
     with col_map:
-        st.markdown("### 🗺️ Peta Interaktif Rute")
-        
-        # Checkboxes for layers
-        show_pso = st.checkbox("Tampilkan Rute PSO (Biru)", value=True)
-        show_greedy = st.checkbox("Tampilkan Rute Greedy (Merah)", value=False)
-        
-        # Build Map figure
-        fig = go.Figure()
-        
-        # Draw Greedy Route
-        if show_greedy:
-            g_lats = [coords[i][0] for i in g_route] + [coords[g_route[0]][0]]
-            g_lons = [coords[i][1] for i in g_route] + [coords[g_route[0]][1]]
-            g_names = [city_names[i] for i in g_route] + [city_names[g_route[0]]]
-            
-            fig.add_trace(go.Scattermapbox(
-                lat=g_lats,
-                lon=g_lons,
-                mode="lines+markers",
-                marker=go.scattermapbox.Marker(size=8, color="#ef4444"),
-                line=dict(width=2.5, color="#f87171"),
-                text=g_names,
-                hoverinfo="text",
-                name="Rute Greedy"
-            ))
-            
-        # Draw PSO Route
-        if show_pso:
-            p_lats = [coords[i][0] for i in p_route] + [coords[p_route[0]][0]]
-            p_lons = [coords[i][1] for i in p_route] + [coords[p_route[0]][1]]
-            p_names = [city_names[i] for i in p_route] + [city_names[p_route[0]]]
-            
-            fig.add_trace(go.Scattermapbox(
-                lat=p_lats,
-                lon=p_lons,
-                mode="lines+markers",
-                marker=go.scattermapbox.Marker(size=10, color="#2563eb"),
-                line=dict(width=3.5, color="#3b82f6"),
-                text=p_names,
-                hoverinfo="text",
-                name="Rute PSO"
-            ))
-            
-        # Highlight Start City (Asterisk or Big Marker)
-        start_idx = p_route[0] if show_pso else g_route[0]
-        fig.add_trace(go.Scattermapbox(
-            lat=[coords[start_idx][0]],
-            lon=[coords[start_idx][1]],
-            mode="markers",
-            marker=go.scattermapbox.Marker(size=16, color="#1e293b", symbol="circle"),
-            text=[f"📍 Mulai & Akhir: {city_names[start_idx]}"],
-            hoverinfo="text",
-            showlegend=False
-        ))
-        
-        # Center coordinates
-        center_lat = np.mean([c[0] for c in coords])
-        center_lon = np.mean([c[1] for c in coords])
-        
-        fig.update_layout(
-            mapbox_style="open-street-map",
-            mapbox_zoom=7.8 if region_choice == 'jabar' else 8.8,
-            mapbox_center={"lat": center_lat, "lon": center_lon},
-            margin={"r":0,"t":0,"l":0,"b":0},
-            height=500,
-            legend=dict(
-                yanchor="top",
-                y=0.99,
-                xanchor="left",
-                x=0.01,
-                bgcolor="rgba(255, 255, 255, 0.8)"
-            )
+        render_map_section(
+            coords, city_names, p_route, g_route,
+            p_history, p_route_history, center_lat, center_lon,
         )
-        
-        st.plotly_chart(fig, use_container_width=True)
-        
-        # Playback Evolution Slider
-        st.markdown("### 🔄 Iteration Playback (Evolusi Rute PSO)")
-        playback_iter = st.slider(
-            "Geser slider untuk melihat peningkatan rute di setiap iterasi PSO:",
-            min_value=0,
-            max_value=len(p_route_history) - 1,
-            value=len(p_route_history) - 1
-        )
-        
-        iter_route = p_route_history[playback_iter]
-        iter_dist = p_history[playback_iter]
-        
-        # Build playback map
-        fig_play = go.Figure()
-        play_lats = [coords[i][0] for i in iter_route] + [coords[iter_route[0]][0]]
-        play_lons = [coords[i][1] for i in iter_route] + [coords[iter_route[0]][1]]
-        play_names = [city_names[i] for i in iter_route] + [city_names[iter_route[0]]]
-        
-        fig_play.add_trace(go.Scattermapbox(
-            lat=play_lats,
-            lon=play_lons,
-            mode="lines+markers",
-            marker=go.scattermapbox.Marker(size=9, color="#10b981"),
-            line=dict(width=3, color="#34d399"),
-            text=play_names,
-            hoverinfo="text",
-            name="Route"
-        ))
-        
-        fig_play.update_layout(
-            mapbox_style="open-street-map",
-            mapbox_zoom=7.8 if region_choice == 'jabar' else 8.8,
-            mapbox_center={"lat": center_lat, "lon": center_lon},
-            margin={"r":0,"t":0,"l":0,"b":0},
-            height=400,
-            showlegend=False
-        )
-        
-        st.plotly_chart(fig_play, use_container_width=True)
-        st.caption(f"**Iterasi ke-{playback_iter}** | Jarak rute pada iterasi ini: `{iter_dist:.2f} km`")
 
-    # --- Analysis Column ---
     with col_analysis:
-        st.markdown("### 📈 Grafik Konvergensi")
-        
-        # Line plot for convergence
-        fig_conv = go.Figure()
-        fig_conv.add_trace(go.Scatter(
-            y=p_history,
-            mode='lines',
-            line=dict(color='#2563eb', width=3),
-            name='PSO Convergence'
-        ))
-        # Horizontal line for Greedy
-        fig_conv.add_trace(go.Scatter(
-            x=[0, len(p_history)-1],
-            y=[g_dist, g_dist],
-            mode='lines',
-            line=dict(color='#dc2626', width=2, dash='dash'),
-            name=f'Greedy Baseline ({g_dist:.1f} km)'
-        ))
-        
-        fig_conv.update_layout(
-            title="Peningkatan Rute terhadap Waktu (Iterasi)",
-            xaxis_title="Iterasi",
-            yaxis_title="Jarak Tempuh (km)",
-            height=300,
-            margin=dict(l=40, r=40, t=40, b=40),
-            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
+        render_analysis_section(
+            p_history, g_dist, p_dist, g_time, p_time,
+            num_cities, w, c1, c2, num_particles, max_iter,
+            mutation_rate, best_preset_name,
         )
-        st.plotly_chart(fig_conv, use_container_width=True)
-        
-        # Detailed stats comparison
-        st.markdown("### 📊 Statistik Perbandingan Detail")
-        data_table = {
-            "Metrik": ["Jarak Rute (Lebih Pendek = Baik)", "Waktu Proses (Lebih Cepat = Baik)", "Jumlah Titik Kota"],
-            "Greedy Baseline": [f"{g_dist:.2f} km", f"{g_time*1000:.2f} ms", f"{num_cities} Kota"],
-            "PSO Optimizer": [f"{p_dist:.2f} km", f"{p_time:.3f} s", f"{num_cities} Kota"]
-        }
-        st.table(pd.DataFrame(data_table))
-        
-        # Parameters information card
-        st.markdown("### 🧠 Detail Konfigurasi PSO")
-        param_data = {
-            "Parameter": ["Preset Aktif", "Inertia Weight (w)", "Cognitive (c1)", "Social (c2)", "Partikel Swarm", "Maks Iterasi", "Mutation Rate"],
-            "Nilai": [best_preset_name, f"{w:.2f}", f"{c1:.2f}", f"{c2:.2f}", str(num_particles), str(max_iter), f"{mutation_rate:.2f}"]
-        }
-        st.dataframe(pd.DataFrame(param_data), use_container_width=True, hide_index=True)
-        
-        # Explanations
-        st.markdown("""
-        <div class="card">
-            <h4>💡 Mengapa Rute PSO Lebih Baik?</h4>
-            <p style='font-size: 0.9rem; color: #475569;'>
-                Algoritma <b>Greedy</b> hanya melihat opsi terbaik secara lokal (kota terdekat dari kota saat ini). 
-                Hal ini sering menghasilkan jalur putar balik yang sangat panjang di akhir rute karena kota-kota yang tersisa letaknya saling berjauhan.
-                <br><br>
-                <b>PSO</b> memelihara sekumpulan solusi alternatif (partikel) yang saling bertukar informasi. 
-                Melalui interaksi antara kecerdasan individual (personal best) dan sosial (global best), 
-                partikel melakukan pencarian rute global yang jauh lebih optimal, menghindari jebakan optimum lokal.
-            </p>
-        </div>
-        """, unsafe_allow_html=True)
-        
-        if 'tuning_log' in st.session_state:
-            with st.expander("🔍 Lihat Hasil Auto-Tuning Preset"):
-                log_df = pd.DataFrame(st.session_state['tuning_log'])
-                st.dataframe(
-                    log_df[['name', 'w', 'c1', 'c2', 'num_particles', 'score']],
-                    column_config={
-                        "name": "Nama Preset",
-                        "w": "w", "c1": "c1", "c2": "c2", 
-                        "num_particles": "Partikel",
-                        "score": "Skor Evaluasi (Jarak Rute Akhir)"
-                    },
-                    use_container_width=True,
-                    hide_index=True
-                )
-                st.caption("Skor evaluasi lebih kecil berarti preset tersebut menghasilkan jarak rute akhir yang lebih pendek.")
-                
-        # --- Full Width Academic Performance Analysis Section ---
-        st.markdown("---")
-        st.markdown("## 📊 Analisis Performa Akademik (Laporan & Dokumentasi)")
-        st.caption("Gunakan data dan diagram di bawah ini untuk disertakan dalam laporan tugas akhir atau slide presentasi Anda.")
-        
-        col_perf1, col_perf2, col_perf3 = st.columns(3)
-        
-        # 1. Distance Bar Chart
-        with col_perf1:
-            # Compute average random route distance for context
-            random_dists = []
-            for _ in range(30):
-                r_perm = list(range(len(coords)))
-                random.shuffle(r_perm)
-                random_dists.append(engine.calculate_route_distance(r_perm, coords, metric_choice))
-            avg_random_dist = np.mean(random_dists)
-            
-            fig_bar_dist = go.Figure([go.Bar(
-                x=['Jalur Acak (Avg)', 'Greedy NN', 'PSO Optimized'],
-                y=[avg_random_dist, g_dist, p_dist],
-                text=[f"{avg_random_dist:.1f} km", f"{g_dist:.1f} km", f"{p_dist:.1f} km"],
-                textposition='auto',
-                marker_color=['#94a3b8', '#f87171', '#3b82f6']
-            )])
-            fig_bar_dist.update_layout(
-                title="<b>Perbandingan Jarak Rute</b>",
-                yaxis_title="Jarak Tempuh (km)",
-                height=320,
-                margin=dict(l=20, r=20, t=50, b=20),
-                showlegend=False
-            )
-            st.plotly_chart(fig_bar_dist, use_container_width=True)
-            st.caption("Menunjukkan reduksi jarak dari rute acak (tanpa kecerdasan), greedy, hingga optimasi final PSO.")
 
-        # 2. Time Bar Chart
-        with col_perf2:
-            fig_bar_time = go.Figure([go.Bar(
-                x=['Greedy Solver', 'PSO Solver'],
-                y=[g_time * 1000, p_time * 1000],
-                text=[f"{g_time*1000:.2f} ms", f"{p_time*1000:.1f} ms"],
-                textposition='auto',
-                marker_color=['#f87171', '#3b82f6']
-            )])
-            fig_bar_time.update_layout(
-                title="<b>Perbandingan Waktu Komputasi</b>",
-                yaxis_title="Waktu Proses (milidetik)",
-                height=320,
-                margin=dict(l=20, r=20, t=50, b=20),
-                showlegend=False
-            )
-            st.plotly_chart(fig_bar_time, use_container_width=True)
-            st.caption("Menunjukkan trade-off komputasi: Greedy sangat cepat, sedangkan PSO membutuhkan lebih banyak waktu untuk optimasi global.")
+    render_academic_section(coords, g_dist, p_dist, g_time, p_time, metric_choice)
 
-        # 3. Particle Diversity Line Chart
-        with col_perf3:
-            if 'pso_diversity' in st.session_state:
-                fig_line_div = go.Figure()
-                fig_line_div.add_trace(go.Scatter(
-                    y=st.session_state['pso_diversity'],
-                    mode='lines',
-                    line=dict(color='#10b981', width=3),
-                    name='Swarm Diversity'
-                ))
-                fig_line_div.update_layout(
-                    title="<b>Kurva Diversitas Swarm (Konvergensi)</b>",
-                    xaxis_title="Iterasi",
-                    yaxis_title="Std Dev Jarak Partikel (km)",
-                    height=320,
-                    margin=dict(l=20, r=20, t=50, b=20),
-                    showlegend=False
-                )
-                st.plotly_chart(fig_line_div, use_container_width=True)
-                st.caption("Mengukur konvergensi matematika: Seiring bertambahnya iterasi, diversitas menyusut mendekati 0 karena seluruh partikel berkumpul ke rute terbaik.")
- 
 else:
-    # App initial state (waiting for run)
-    st.info("👈 Silakan atur konfigurasi solver di sidebar lalu klik tombol **Run Optimasi TSP** untuk memulai perhitungan dan visualisasi.")
-    
-    st.markdown("### 📋 Gambaran Dataset Kota Terpilih")
+    st.info("Atur parameter di sidebar lalu klik **Run**.")
+    st.markdown("#### Dataset")
     st.dataframe(
-        df[['id', 'name', 'lat', 'long']],
-        column_config={
-            "id": "ID Wilayah",
-            "name": "Nama Kabupaten / Kota",
-            "lat": "Latitude (Lintang)",
-            "long": "Longitude (Bujur)"
-        },
-        use_container_width=True
+        df[["name", "lat", "long"]].rename(columns={
+            "name": "Kota / Kabupaten", "lat": "Latitude", "long": "Longitude",
+        }),
+        use_container_width=True,
     )
-    
+    st.divider()
     col_1, col_2 = st.columns(2)
     with col_1:
-        st.markdown("""
-        ### 🧠 Konsep Swarm Intelligence
-        Metode ini meniru perilaku alamiah koloni hewan seperti kawanan burung atau sekolah ikan dalam mencari sumber makanan. 
-        Masing-masing individu (partikel) berkolaborasi mencari koordinat terbaik dalam ruang dimensi-N dengan menyesuaikan arah terbangnya 
-        berdasarkan pengalaman pribadi suksesnya sendiri serta kesuksesan kawanan secara kolektif.
-        """)
+        st.markdown("**Swarm Intelligence**")
+        st.markdown(
+            "Meniru perilaku kawanan burung atau ikan dalam mencari sumber makanan. "
+            "Tiap partikel menyesuaikan arahnya berdasarkan pengalaman pribadi "
+            "(*personal best*) dan kesuksesan kawanan (*global best*)."
+        )
     with col_2:
-        st.markdown("""
-        ### ⚙️ Operator Swap Permutasi
-        Karena rute TSP adalah masalah urutan (diskrit), representasi kecepatan diubah menjadi urutan operasi pertukaran indeks (*swap sequence*). 
-        Setiap partikel memperbarui rutenya dengan menerapkan serangkaian pertukaran kota agar rute miliknya secara bertahap menyerupai 
-        rute terbaik milik pribadinya (*pbest*) dan rute terbaik dari seluruh populasi (*gbest*).
-        """)
+        st.markdown("**Operator Swap Permutasi**")
+        st.markdown(
+            "Rute TSP adalah masalah urutan (diskrit), sehingga kecepatan partikel "
+            "direpresentasikan sebagai urutan operasi tukar-posisi (*swap sequence*). "
+            "Setiap partikel memperbarui rutenya dengan menerapkan swap agar "
+            "mendekati *pbest* dan *gbest*."
+        )
