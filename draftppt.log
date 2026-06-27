@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.6.27)  27 JUN 2026 21:12
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.6.27)  27 JUN 2026 22:27
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -971,28 +971,28 @@ File: tikzlibrarybackgrounds.code.tex 2025-08-29 v3.1.11a (3.1.11a)
 tex.def
 File: l3backend-pdftex.def 2025-10-09 L3 backend support: PDF output (pdfTeX)
 \l__color_backend_stack_int=\count373
-)
-No file draftppt.aux.
+) (draftppt.aux)
 \openout1 = `draftppt.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 57.
-LaTeX Font Info:    ... okay on input line 57.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 57.
-LaTeX Font Info:    ... okay on input line 57.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 57.
-LaTeX Font Info:    ... okay on input line 57.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 57.
-LaTeX Font Info:    ... okay on input line 57.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 57.
-LaTeX Font Info:    ... okay on input line 57.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 57.
-LaTeX Font Info:    ... okay on input line 57.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 57.
-LaTeX Font Info:    ... okay on input line 57.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 57.
-LaTeX Font Info:    ... okay on input line 57.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 57.
-LaTeX Font Info:    ... okay on input line 57.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 53.
+LaTeX Font Info:    ... okay on input line 53.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 53.
+LaTeX Font Info:    ... okay on input line 53.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 53.
+LaTeX Font Info:    ... okay on input line 53.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 53.
+LaTeX Font Info:    ... okay on input line 53.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 53.
+LaTeX Font Info:    ... okay on input line 53.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 53.
+LaTeX Font Info:    ... okay on input line 53.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 53.
+LaTeX Font Info:    ... okay on input line 53.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 53.
+LaTeX Font Info:    ... okay on input line 53.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 53.
+LaTeX Font Info:    ... okay on input line 53.
+
 *geometry* driver: auto-detecting
 *geometry* detected driver: pdftex
 *geometry* verbose mode - [ preamble ] result:
@@ -1053,67 +1053,68 @@ Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
 fg
 File: epstopdf-sys.cfg 2021/03/18 v2.0 Configuration of epstopdf for MiKTeX
 ))
-Package hyperref Info: Link coloring OFF on input line 57.
+Package hyperref Info: Link coloring OFF on input line 53.
+ (draftppt.out) (draftppt.out)
 \@outlinefile=\write5
 \openout5 = `draftppt.out'.
 
 LaTeX Font Info:    Overwriting symbol font `operators' in version `normal'
-(Font)                  OT1/cmr/m/n --> OT1/cmss/m/n on input line 57.
+(Font)                  OT1/cmr/m/n --> OT1/cmss/m/n on input line 53.
 LaTeX Font Info:    Overwriting symbol font `operators' in version `bold'
-(Font)                  OT1/cmr/bx/n --> OT1/cmss/b/n on input line 57.
+(Font)                  OT1/cmr/bx/n --> OT1/cmss/b/n on input line 53.
 \symnumbers=\mathgroup6
 \sympureletters=\mathgroup7
 LaTeX Font Info:    Overwriting math alphabet `\mathrm' in version `normal'
-(Font)                  OT1/cmss/m/n --> T1/cmr/m/n on input line 57.
-LaTeX Font Info:    Redeclaring math alphabet \mathbf on input line 57.
+(Font)                  OT1/cmss/m/n --> T1/cmr/m/n on input line 53.
+LaTeX Font Info:    Redeclaring math alphabet \mathbf on input line 53.
 LaTeX Font Info:    Overwriting math alphabet `\mathbf' in version `normal'
-(Font)                  OT1/cmr/bx/n --> T1/cmss/b/n on input line 57.
+(Font)                  OT1/cmr/bx/n --> T1/cmss/b/n on input line 53.
 LaTeX Font Info:    Overwriting math alphabet `\mathbf' in version `bold'
-(Font)                  OT1/cmr/bx/n --> T1/cmss/b/n on input line 57.
-LaTeX Font Info:    Redeclaring math alphabet \mathsf on input line 57.
+(Font)                  OT1/cmr/bx/n --> T1/cmss/b/n on input line 53.
+LaTeX Font Info:    Redeclaring math alphabet \mathsf on input line 53.
 LaTeX Font Info:    Overwriting math alphabet `\mathsf' in version `normal'
-(Font)                  OT1/cmss/m/n --> T1/cmss/m/n on input line 57.
+(Font)                  OT1/cmss/m/n --> T1/cmss/m/n on input line 53.
 LaTeX Font Info:    Overwriting math alphabet `\mathsf' in version `bold'
-(Font)                  OT1/cmss/bx/n --> T1/cmss/m/n on input line 57.
-LaTeX Font Info:    Redeclaring math alphabet \mathit on input line 57.
+(Font)                  OT1/cmss/bx/n --> T1/cmss/m/n on input line 53.
+LaTeX Font Info:    Redeclaring math alphabet \mathit on input line 53.
 LaTeX Font Info:    Overwriting math alphabet `\mathit' in version `normal'
-(Font)                  OT1/cmr/m/it --> T1/cmss/m/it on input line 57.
+(Font)                  OT1/cmr/m/it --> T1/cmss/m/it on input line 53.
 LaTeX Font Info:    Overwriting math alphabet `\mathit' in version `bold'
-(Font)                  OT1/cmr/bx/it --> T1/cmss/m/it on input line 57.
-LaTeX Font Info:    Redeclaring math alphabet \mathtt on input line 57.
+(Font)                  OT1/cmr/bx/it --> T1/cmss/m/it on input line 53.
+LaTeX Font Info:    Redeclaring math alphabet \mathtt on input line 53.
 LaTeX Font Info:    Overwriting math alphabet `\mathtt' in version `normal'
-(Font)                  OT1/cmtt/m/n --> T1/cmtt/m/n on input line 57.
+(Font)                  OT1/cmtt/m/n --> T1/cmtt/m/n on input line 53.
 LaTeX Font Info:    Overwriting math alphabet `\mathtt' in version `bold'
-(Font)                  OT1/cmtt/m/n --> T1/cmtt/m/n on input line 57.
+(Font)                  OT1/cmtt/m/n --> T1/cmtt/m/n on input line 53.
 LaTeX Font Info:    Overwriting symbol font `numbers' in version `bold'
-(Font)                  T1/cmss/m/n --> T1/cmss/b/n on input line 57.
+(Font)                  T1/cmss/m/n --> T1/cmss/b/n on input line 53.
 LaTeX Font Info:    Overwriting symbol font `pureletters' in version `bold'
-(Font)                  T1/cmss/m/it --> T1/cmss/b/it on input line 57.
+(Font)                  T1/cmss/m/it --> T1/cmss/b/it on input line 53.
 LaTeX Font Info:    Overwriting math alphabet `\mathrm' in version `bold'
-(Font)                  OT1/cmss/b/n --> T1/cmr/b/n on input line 57.
+(Font)                  OT1/cmss/b/n --> T1/cmr/b/n on input line 53.
 LaTeX Font Info:    Overwriting math alphabet `\mathbf' in version `bold'
-(Font)                  T1/cmss/b/n --> T1/cmss/b/n on input line 57.
+(Font)                  T1/cmss/b/n --> T1/cmss/b/n on input line 53.
 LaTeX Font Info:    Overwriting math alphabet `\mathsf' in version `bold'
-(Font)                  T1/cmss/m/n --> T1/cmss/b/n on input line 57.
+(Font)                  T1/cmss/m/n --> T1/cmss/b/n on input line 53.
 LaTeX Font Info:    Overwriting math alphabet `\mathit' in version `bold'
-(Font)                  T1/cmss/m/it --> T1/cmss/b/it on input line 57.
+(Font)                  T1/cmss/m/it --> T1/cmss/b/it on input line 53.
 LaTeX Font Info:    Overwriting math alphabet `\mathtt' in version `bold'
-(Font)                  T1/cmtt/m/n --> T1/cmtt/b/n on input line 57.
-LaTeX Font Info:    Redeclaring symbol font `pureletters' on input line 57.
+(Font)                  T1/cmtt/m/n --> T1/cmtt/b/n on input line 53.
+LaTeX Font Info:    Redeclaring symbol font `pureletters' on input line 53.
 LaTeX Font Info:    Encoding `T1' has changed to `OT1' for symbol font
-(Font)              `pureletters' in the math version `normal' on input line 57
+(Font)              `pureletters' in the math version `normal' on input line 53
 .
 LaTeX Font Info:    Overwriting symbol font `pureletters' in version `normal'
-(Font)                  T1/cmss/m/it --> OT1/mathkerncmss/m/sl on input line 57
+(Font)                  T1/cmss/m/it --> OT1/mathkerncmss/m/sl on input line 53
 .
 LaTeX Font Info:    Encoding `T1' has changed to `OT1' for symbol font
-(Font)              `pureletters' in the math version `bold' on input line 57.
+(Font)              `pureletters' in the math version `bold' on input line 53.
 LaTeX Font Info:    Overwriting symbol font `pureletters' in version `bold'
-(Font)                  T1/cmss/b/it --> OT1/mathkerncmss/m/sl on input line 57
+(Font)                  T1/cmss/b/it --> OT1/mathkerncmss/m/sl on input line 53
 .
 LaTeX Font Info:    Overwriting symbol font `pureletters' in version `bold'
 (Font)                  OT1/mathkerncmss/m/sl --> OT1/mathkerncmss/bx/sl on inp
-ut line 57.
+ut line 53.
 
 (C:\Users\naufa\AppData\Local\Programs\MiKTeX\tex/latex/translator\translator-b
 asic-dictionary-English.dict
@@ -1138,21 +1139,21 @@ Dictionary: translator-numbers-dictionary, Language: English
 (C:\Users\naufa\AppData\Local\Programs\MiKTeX\tex/latex/translator\translator-t
 heorem-dictionary-English.dict
 Dictionary: translator-theorem-dictionary, Language: English 
-)
-No file draftppt.nav.
-LaTeX Font Info:    Trying to load font information for U+msa on input line 102
-.
+) (draftppt.nav)
+LaTeX Font Info:    Trying to load font information for U+msa on input line 98.
+
+
 (C:\Users\naufa\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 102
-.
+LaTeX Font Info:    Trying to load font information for U+msb on input line 98.
+
 
 (C:\Users\naufa\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
 LaTeX Font Info:    Trying to load font information for OT1+mathkerncmss on inp
-ut line 102.
+ut line 98.
 
 (C:\Users\naufa\AppData\Local\Programs\MiKTeX\tex/latex/sansmathaccent\ot1mathk
 erncmss.fd
@@ -1162,15 +1163,18 @@ thkerncmss.
 
 {C:/Users/naufa/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}] [2
 
-] [3
+]
+LaTeX Font Info:    Font shape `T1/cmtt/bx/n' in size <10> not available
+(Font)              Font shape `T1/cmtt/m/n' tried instead on input line 151.
+ [3
 
 ]
-<out/04_matriks_jarak_geografis.png, id=51, 939.9918pt x 782.925pt>
+<out/04_matriks_jarak_geografis.png, id=50, 939.9918pt x 782.925pt>
 File: out/04_matriks_jarak_geografis.png Graphic file (type png)
 <use out/04_matriks_jarak_geografis.png>
 Package pdftex.def Info: out/04_matriks_jarak_geografis.png  used on input line
- 179.
-(pdftex.def)             Requested size: 190.93536pt x 159.03125pt.
+ 184.
+(pdftex.def)             Requested size: 161.56068pt x 134.5649pt.
  [4
 
  <./out/04_matriks_jarak_geografis.png>] [5
@@ -1181,47 +1185,55 @@ Package pdftex.def Info: out/04_matriks_jarak_geografis.png  used on input line
 
 ] [8
 
-] [9
+]
+Underfull \hbox (badness 3492) in paragraph at lines 315--315
+[]|\T1/cmss/m/n/8 Kawanan sa-ngat agre-sif meng-e-ru-
+ []
+
+[9
+
+] [10
 
 ]
-[10
-
-]
-<out/02_perbandingan_rute_greedy_vs_pso.png, id=95, 1281.588pt x 638.385pt>
+<out/02_perbandingan_rute_greedy_vs_pso.png, id=109, 1281.588pt x 638.385pt>
 File: out/02_perbandingan_rute_greedy_vs_pso.png Graphic file (type png)
 <use out/02_perbandingan_rute_greedy_vs_pso.png>
 Package pdftex.def Info: out/02_perbandingan_rute_greedy_vs_pso.png  used on in
-put line 388.
-(pdftex.def)             Requested size: 278.82137pt x 138.88657pt.
+put line 362.
+(pdftex.def)             Requested size: 294.71992pt x 146.80597pt.
  [11
 
  <./out/02_perbandingan_rute_greedy_vs_pso.png>]
-<out/01_kurva_konvergensi_pso_vs_greedy.png, id=102, 711.1368pt x 349.7868pt>
+<out/01_kurva_konvergensi_pso_vs_greedy.png, id=116, 711.1368pt x 349.7868pt>
 File: out/01_kurva_konvergensi_pso_vs_greedy.png Graphic file (type png)
 <use out/01_kurva_konvergensi_pso_vs_greedy.png>
 Package pdftex.def Info: out/01_kurva_konvergensi_pso_vs_greedy.png  used on in
-put line 408.
-(pdftex.def)             Requested size: 258.91713pt x 127.35355pt.
- [12
+put line 379.
+(pdftex.def)             Requested size: 298.46924pt x 146.80804pt.
+
+Overfull \vbox (6.39018pt too high) detected at line 379
+ []
+
+[12
 
  <./out/01_kurva_konvergensi_pso_vs_greedy.png>]
-<out/03_analisis_kinerja_pso_vs_greedy.png, id=109, 1433.8368pt x 425.9112pt>
+<out/03_analisis_kinerja_pso_vs_greedy.png, id=123, 1433.8368pt x 425.9112pt>
 File: out/03_analisis_kinerja_pso_vs_greedy.png Graphic file (type png)
 <use out/03_analisis_kinerja_pso_vs_greedy.png>
 Package pdftex.def Info: out/03_analisis_kinerja_pso_vs_greedy.png  used on inp
-ut line 431.
-(pdftex.def)             Requested size: 258.91087pt x 76.90765pt.
+ut line 394.
+(pdftex.def)             Requested size: 358.50208pt x 106.49052pt.
  [13
 
  <./out/03_analisis_kinerja_pso_vs_greedy.png>]
-<out/05_distribusi_panjang_langkah_rute.png, id=117, 855.6768pt x 422.0568pt>
+<out/05_distribusi_panjang_langkah_rute.png, id=131, 855.6768pt x 422.0568pt>
 File: out/05_distribusi_panjang_langkah_rute.png Graphic file (type png)
 <use out/05_distribusi_panjang_langkah_rute.png>
 Package pdftex.def Info: out/05_distribusi_panjang_langkah_rute.png  used on in
-put line 455.
-(pdftex.def)             Requested size: 258.91158pt x 127.70638pt.
+put line 409.
+(pdftex.def)             Requested size: 297.63733pt x 146.8076pt.
 
-Overfull \vbox (5.023pt too high) detected at line 455
+Overfull \vbox (4.38974pt too high) detected at line 409
  []
 
 [14
@@ -1249,57 +1261,65 @@ L3 programming layer <2025-12-24>
 
 LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
 
-
-Package rerunfilecheck Warning: File `draftppt.out' has changed.
-(rerunfilecheck)                Rerun to get outlines right
-(rerunfilecheck)                or use package `bookmark'.
-
-Package rerunfilecheck Info: Checksums for `draftppt.out':
-(rerunfilecheck)             Before: <no file>
-(rerunfilecheck)             After:  D41D8CD98F00B204E9800998ECF8427E;0.
+Package rerunfilecheck Info: File `draftppt.out' has not changed.
+(rerunfilecheck)             Checksum: D41D8CD98F00B204E9800998ECF8427E;0.
  ) 
 Here is how much of TeX's memory you used:
- 27261 strings out of 467871
- 547698 string characters out of 5418376
- 938614 words of memory out of 5000000
- 55561 multiletter control sequences out of 15000+600000
- 652181 words of font info for 90 fonts, out of 8000000 for 9000
+ 27280 strings out of 467871
+ 548459 string characters out of 5418376
+ 938675 words of memory out of 5000000
+ 55564 multiletter control sequences out of 15000+600000
+ 657635 words of font info for 102 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 128i,11n,123p,385b,859s stack positions out of 10000i,1000n,20000p,200000b,200000s
- <C:\Users\naufa\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecss
-1200.pk> <C:\Users\naufa\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi60
-0\ecsx2488.pk> <C:\Users\naufa\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec
-/dpi600\ectt1000.pk> <C:\Users\naufa\AppData\Local\MiKTeX\fonts/pk/ljfour/jknap
-pen/ec/dpi600\ecso1000.pk> <C:\Users\naufa\AppData\Local\MiKTeX\fonts/pk/ljfour
-/jknappen/ec/dpi600\ecsi0900.pk> <C:\Users\naufa\AppData\Local\MiKTeX\fonts/pk/
-ljfour/jknappen/ec/dpi600\ecsx0900.pk> <C:\Users\naufa\AppData\Local\MiKTeX\fon
-ts/pk/ljfour/jknappen/ec/dpi600\ecsi1000.pk> <C:\Users\naufa\AppData\Local\MiKT
-eX\fonts/pk/ljfour/jknappen/ec/dpi600\ecsi0800.pk> <C:\Users\naufa\AppData\Loca
-l\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecss0700.pk> <C:\Users\naufa\AppDat
-a\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecss0500.pk> <C:\Users\naufa\
-AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecsx1200.pk> <C:\Users\
-naufa\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecsx1000.pk> <C:\
-Users\naufa\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecss1000.pk
-> <C:\Users\naufa\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecso0
-900.pk> <C:\Users\naufa\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600
-\ecss0800.pk> <C:\Users\naufa\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/
-dpi600\ecss0900.pk> <C:\Users\naufa\AppData\Local\MiKTeX\fonts/pk/ljfour/jknapp
-en/ec/dpi600\ecso1440.pk> <C:\Users\naufa\AppData\Local\MiKTeX\fonts/pk/ljfour/
-jknappen/ec/dpi600\ecsx1440.pk><C:/Users/naufa/AppData/Local/Programs/MiKTeX/fo
-nts/type1/public/amsfonts/cm/cmex10.pfb><C:/Users/naufa/AppData/Local/Programs/
-MiKTeX/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C:/Users/naufa/AppData/Local/
-Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmss10.pfb><C:/Users/naufa/AppDa
-ta/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmss8.pfb><C:/Users/nau
-fa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmssi10.pfb><C:
-/Users/naufa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmssi
-8.pfb><C:/Users/naufa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts
-/cm/cmsy10.pfb><C:/Users/naufa/AppData/Local/Programs/MiKTeX/fonts/type1/public
-/amsfonts/cm/cmsy7.pfb><C:/Users/naufa/AppData/Local/Programs/MiKTeX/fonts/type
-1/public/amsfonts/cm/cmsy9.pfb><C:/Users/naufa/AppData/Local/Programs/MiKTeX/fo
-nts/type1/public/amsfonts/symbols/msam10.pfb>
-Output written on draftppt.pdf (16 pages, 1003436 bytes).
+ 128i,11n,123p,385b,788s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ <C:\Users\naufa\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecsx
+2488.pk> <C:\Users\naufa\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi60
+0\ecsi0800.pk> <C:\Users\naufa\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec
+/dpi600\ecsx0800.pk> <C:\Users\naufa\AppData\Local\MiKTeX\fonts/pk/ljfour/jknap
+pen/ec/dpi600\ectt0900.pk> <C:\Users\naufa\AppData\Local\MiKTeX\fonts/pk/ljfour
+/jknappen/ec/dpi600\ecsx0900.pk> <C:\Users\naufa\AppData\Local\MiKTeX\fonts/pk/
+ljfour/jknappen/ec/dpi600\ecso1000.pk> <C:\Users\naufa\AppData\Local\MiKTeX\fon
+ts/pk/ljfour/jknappen/ec/dpi600\ecso1200.pk> <C:\Users\naufa\AppData\Local\MiKT
+eX\fonts/pk/ljfour/jknappen/ec/dpi600\ecsx1200.pk> <C:\Users\naufa\AppData\Loca
+l\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecsi0700.pk> <C:\Users\naufa\AppDat
+a\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecsx0700.pk> <C:\Users\naufa\
+AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecss0600.pk> <C:\Users\
+naufa\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecsi0900.pk> <C:\
+Users\naufa\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ectt1000.pk
+> <C:\Users\naufa\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecsi1
+000.pk> <C:\Users\naufa\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600
+\ecss0500.pk> <C:\Users\naufa\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/
+dpi600\ecss0700.pk> <C:\Users\naufa\AppData\Local\MiKTeX\fonts/pk/ljfour/jknapp
+en/ec/dpi600\ecss1000.pk> <C:\Users\naufa\AppData\Local\MiKTeX\fonts/pk/ljfour/
+jknappen/ec/dpi600\ecsx1000.pk> <C:\Users\naufa\AppData\Local\MiKTeX\fonts/pk/l
+jfour/jknappen/ec/dpi600\ecso0900.pk> <C:\Users\naufa\AppData\Local\MiKTeX\font
+s/pk/ljfour/jknappen/ec/dpi600\ecss0800.pk> <C:\Users\naufa\AppData\Local\MiKTe
+X\fonts/pk/ljfour/jknappen/ec/dpi600\ecss0900.pk> <C:\Users\naufa\AppData\Local
+\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecso1440.pk> <C:\Users\naufa\AppData
+\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecsx1440.pk><C:/Users/naufa/Ap
+pData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmex10.pfb><C:/Users
+/naufa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cmextra/cmex8.
+pfb><C:/Users/naufa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/c
+m/cmmi10.pfb><C:/Users/naufa/AppData/Local/Programs/MiKTeX/fonts/type1/public/a
+msfonts/cm/cmmi7.pfb><C:/Users/naufa/AppData/Local/Programs/MiKTeX/fonts/type1/
+public/amsfonts/cm/cmmi8.pfb><C:/Users/naufa/AppData/Local/Programs/MiKTeX/font
+s/type1/public/amsfonts/cm/cmmi9.pfb><C:/Users/naufa/AppData/Local/Programs/MiK
+TeX/fonts/type1/public/amsfonts/cm/cmss10.pfb><C:/Users/naufa/AppData/Local/Pro
+grams/MiKTeX/fonts/type1/public/amsfonts/cm/cmss8.pfb><C:/Users/naufa/AppData/L
+ocal/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmss9.pfb><C:/Users/naufa/A
+ppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmssi10.pfb><C:/Use
+rs/naufa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmssi8.pf
+b><C:/Users/naufa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/
+cmssi9.pfb><C:/Users/naufa/AppData/Local/Programs/MiKTeX/fonts/type1/public/ams
+fonts/cm/cmsy10.pfb><C:/Users/naufa/AppData/Local/Programs/MiKTeX/fonts/type1/p
+ublic/amsfonts/cm/cmsy7.pfb><C:/Users/naufa/AppData/Local/Programs/MiKTeX/fonts
+/type1/public/amsfonts/cm/cmsy8.pfb><C:/Users/naufa/AppData/Local/Programs/MiKT
+eX/fonts/type1/public/amsfonts/cm/cmsy9.pfb><C:/Users/naufa/AppData/Local/Progr
+ams/MiKTeX/fonts/type1/public/amsfonts/symbols/msam10.pfb><C:/Users/naufa/AppDa
+ta/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/symbols/msam7.pfb>
+Output written on draftppt.pdf (16 pages, 1125980 bytes).
 PDF statistics:
- 766 PDF objects out of 1000 (max. 8388607)
+ 977 PDF objects out of 1000 (max. 8388607)
  33 named destinations out of 1000 (max. 500000)
  74 words of extra memory for PDF output out of 10000 (max. 10000000)
 
