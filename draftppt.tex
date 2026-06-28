@@ -107,7 +107,7 @@
     \textbf{Latar Belakang}
     \begin{itemize}
       \item Optimasi rute krusial untuk sektor logistik dan distribusi guna meminimalkan biaya operasional.
-      \item Menggunakan dataset riil 27 kabupaten/kota di Jawa Barat (Mencakup Nama, Latitude (X), Longitude (Y)).
+      \item Menggunakan dataset riil 27 kabupaten/kota di Jawa Barat (Mencakup Nama, Latitude (Y), Longitude (X)).
       \item Ruang pencarian berskala eksponensial $\approx 27!$ ($10^{28}$) kemungkinan rute, sehingga tergolong masalah \textbf{NP-Hard}.
     \end{itemize}
 
@@ -162,7 +162,7 @@
       \vspace{-0.1cm}
       {\footnotesize
       \[ a = \sin^2\!\left(\frac{\Delta\phi}{2}\right) + \cos(\phi_1)\cos(\phi_2)\sin^2\!\left(\frac{\Delta\lambda}{2}\right) \]
-      \[ c = 2 \cdot \text{atan2}\left(\sqrt{a}, \sqrt{1-a}\right), \quad d = R \cdot c \]
+      \[ c = 2 \cdot \arcsin\left(\sqrt{a}\right), \quad d = R \cdot c \]
       }
       \vspace{-0.2cm}
       \item \textbf{Mengapa Haversine?} Jauh lebih presisi dibandingkan metrik \textit{Euclidean} datar karena mengakomodasi kelengkungan bola bumi.
@@ -302,13 +302,13 @@
       \toprule
       \textbf{Preset} & $w$ & $c_1$ & $c_2$ & \textbf{Mutasi} & \textbf{Karakteristik} \\
       \midrule
-      \textbf{Balanced} & 0.6 & 1.5 & 1.5 & 0.10 & Seimbang antara daya jelajah (\textit{exploration}) dan ketajaman lokal (\textit{exploitation}).\\
+      \textbf{Balanced} & 0.7 & 1.5 & 1.5 & 0.05 & Seimbang antara daya jelajah (\textit{exploration}) dan ketajaman lokal (\textit{exploitation}).\\
       \addlinespace
-      \textbf{Exploration-Heavy} & 0.8 & 2.0 & 1.0 & 0.15 & Partikel agresif mencari wilayah baru guna menghindari \textit{local optimum}.\\
+      \textbf{Exploration-Heavy} & 0.9 & 2.0 & 1.0 & 0.05 & Partikel agresif mencari wilayah baru guna menghindari \textit{local optimum}.\\
       \addlinespace
       \textbf{Exploitation-Heavy} & 0.4 & 1.0 & 2.0 & 0.05 & Kawanan sangat agresif mengerucut ke solusi global terbaik saat ini (\textit{GBest}).\\
       \addlinespace
-      \textbf{Lightweight} & 0.5 & 1.5 & 1.5 & 0.10 & Konfigurasi minimalis (partikel kecil) untuk demonstrasi \textit{runtime} cepat.\\
+      \textbf{Lightweight} & 0.6 & 1.2 & 1.2 & 0.05 & Konfigurasi minimalis (partikel kecil) untuk demonstrasi \textit{runtime} cepat.\\
       \bottomrule
     \end{tabular}
   \end{table}

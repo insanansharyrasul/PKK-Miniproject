@@ -14,7 +14,7 @@ Implementasi akademik **Discrete Particle Swarm Optimization (PSO)** untuk menye
 |---|---|---|---|
 | Jalur Acak (avg, 50 sampel) | 2.701,19 km | — | −202,83% |
 | Greedy Nearest Neighbor | 891,94 km | 2 ms | baseline |
-| **Memetic PSO** | **788,08 km** | **~9,79 s** | **+11,64%** |
+| **Memetic PSO** | **788,08 km** | **~9,80 s** | **+11,64%** |
 
 PSO berhasil menghemat **103,86 km** dibanding baseline Greedy dengan _seed_ 42, preset Exploitation-Heavy (`w=0.4, c1=1.0, c2=2.0`, 15 partikel), dan _early stopping_ di iterasi ke-60.
 
@@ -81,10 +81,10 @@ TSP bersifat diskrit (ruang pencarian berupa permutasi), sehingga PSO kontinu st
 
 | Preset | w | c1 | c2 | Partikel | Skor (27 kota) |
 |---|---|---|---|---|---|
-| Balanced | 0.7 | 1.5 | 1.5 | 20 | 851.61 km |
-| Exploration-Heavy | 0.9 | 2.0 | 1.0 | 30 | 864.93 km |
-| **Exploitation-Heavy** | **0.4** | **1.0** | **2.0** | **15** | **838.28 km ✓** |
-| Lightweight | 0.6 | 1.2 | 1.2 | 10 | 851.61 km |
+| Balanced | 0.7 | 1.5 | 1.5 | 20 | 864.93 km |
+| Exploration-Heavy | 0.9 | 2.0 | 1.0 | 30 | 856.37 km |
+| **Exploitation-Heavy** | **0.4** | **1.0** | **2.0** | **15** | **851.61 km ✓** |
+| Lightweight | 0.6 | 1.2 | 1.2 | 10 | 864.93 km |
 
 ---
 

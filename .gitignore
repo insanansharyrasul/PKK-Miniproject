@@ -2,3 +2,20 @@
 __pycache__/
 *.pyc
 .env
+memory/
+
+# LaTeX build artifacts
+*.aux
+*.log
+*.nav
+*.out
+*.snm
+*.toc
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+
+# Archives
+*.zip
+*.rar
+*.7z

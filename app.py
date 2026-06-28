@@ -259,7 +259,7 @@ def render_academic_section(
 
     with col1:
         random_dists = []
-        for _ in range(30):
+        for _ in range(50):
             perm = list(range(len(coords)))
             random.shuffle(perm)
             random_dists.append(engine.calculate_route_distance(perm, coords, metric_choice))
