@@ -427,7 +427,7 @@ best_preset_name = "Default"
 if tune_mode == "Auto-Tune":
     if st.sidebar.button("Jalankan Auto-Tune"):
         with st.spinner("Mengevaluasi preset..."):
-            best_config, tuning_log = engine.auto_tune_pso(coords, metric_choice)
+            best_config, tuning_log = engine.auto_tune_pso(coords, metric_choice, tune_seed=42)
             st.session_state["auto_pso_params"] = best_config
             st.session_state["tuning_log"]      = tuning_log
             st.sidebar.success(f"Preset terpilih: {best_config['name']}")

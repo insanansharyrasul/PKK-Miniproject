@@ -428,24 +428,26 @@ def evaluate_parameters(
     num_particles: int,
     trials: int = 3,
     test_iters: int = 30,
+    tune_seed: int | None = None,
 ) -> float:
     """
     Evaluates a parameter set by averaging the final best distance over multiple trials.
     Lower score is better.
     """
     total = 0.0
-    for _ in range(trials):
+    for i in range(trials):
+        seed = tune_seed * 100 + i if tune_seed is not None else None
         solver = PSOSolver(
             coords=coords, metric=metric, num_particles=num_particles,
             max_iter=test_iters, w=w, c1=c1, c2=c2, mutation_rate=0.05,
-            enable_periodic_two_opt=False,
+            seed=seed, enable_periodic_two_opt=False,
         )
         solver.solve()
         total += solver.history[-1]
     return total / trials
 
 
-def auto_tune_pso(coords: Coords, metric: str = 'haversine') -> tuple[dict, list[dict]]:
+def auto_tune_pso(coords: Coords, metric: str = 'haversine', tune_seed: int | None = None) -> tuple[dict, list[dict]]:
     """
     Grid search over 4 preset configurations. Returns (best_preset, tuning_log).
 
@@ -485,6 +487,7 @@ def auto_tune_pso(coords: Coords, metric: str = 'haversine') -> tuple[dict, list
             coords=coords, metric=metric,
             w=preset["w"], c1=preset["c1"], c2=preset["c2"],
             num_particles=preset["num_particles"],
+            tune_seed=tune_seed,
         )
         entry = {**preset, "score": score}
         tuning_log.append(entry)

@@ -92,6 +92,9 @@
       {\color{Slate}\small
         Departemen Ilmu Komputer $\cdot$ IPB University $\cdot$ KOM1326
       }
+      \vspace{0.10cm}
+
+      {\color{Sky}\small\bfseries Kelompok 6}
     \end{minipage}
   \end{center}
   \vfill
@@ -354,11 +357,11 @@
   \includegraphics[width=0.85\linewidth,height=0.6\textheight,keepaspectratio]{02_perbandingan_rute_greedy_vs_pso.png}
   
   \vspace{0.3cm}
-  \textbf{Jarak Greedy NN:} 891,94 km \quad $\longrightarrow$ \quad \textbf{Jarak Memetic PSO:} \textbf{\color{Sky} 788,08 km}
+  \textbf{Jarak Greedy NN:} 891,94 km \quad $\longrightarrow$ \quad \textbf{Jarak Memetic PSO:} \textbf{\color{Sky} 784,61 km}
   
   \vspace{0.1cm}
   \justifying\small
-  \textbf{Peningkatan Efisiensi 11,64\%:} Rute PSO (kanan) secara cerdas berhasil mengeliminasi simpul persilangan lintas wilayah (\textit{crossing edges}), menutupi kelemahan proksimal dari \textit{Greedy} (kiri).
+  \textbf{Peningkatan Efisiensi 12,03\%:} Rute PSO (kanan) secara cerdas berhasil mengeliminasi simpul persilangan lintas wilayah (\textit{crossing edges}), menutupi kelemahan proksimal dari \textit{Greedy} (kiri).
 \end{frame}
 
 % ─────────────────────────────────────────────
@@ -374,7 +377,7 @@
   \begin{itemize}
     \item \textbf{Titik Mula:} Kurva PSO (biru) dimulai tepat di garis \textit{Greedy} berkat teknik \textit{Heuristic Seeding}.
     \item \textbf{Optimalisasi Masif:} Kolaborasi partikel dan \textit{2-opt} periodik sukses memotong jarak secara drastis, membuktikan PSO berhasil mengoptimasi \textit{Greedy}.
-    \item \textbf{Stabilitas:} Konvergen stabil dan memicu \textit{early stopping} otomatis di iterasi ke-60.
+    \item \textbf{Stabilitas:} Konvergen stabil dan memicu \textit{early stopping} otomatis di iterasi ke-80.
   \end{itemize}
 \end{frame}
 
@@ -388,7 +391,7 @@
   \vspace{0.3cm}
   \justifying\small
   \begin{itemize}
-    \item \textbf{Analisis Waktu (Tengah):} Terdapat \textit{trade-off} komputasi. PSO ($\approx 10$ s) lebih lambat dari \textit{Greedy} ($2$ ms), namun sangat sepadan (\textit{worth it}) untuk efisiensi bahan bakar rute riil sejauh $>100$ km.
+    \item \textbf{Analisis Waktu (Tengah):} Terdapat \textit{trade-off} komputasi. PSO ($\approx 15$ s) lebih lambat dari \textit{Greedy} ($2$ ms), namun sangat sepadan (\textit{worth it}) untuk efisiensi bahan bakar rute riil sejauh $>100$ km.
     \item \textbf{Konvergensi Kawanan (Kanan):} Kurva deviasi (posisi antar partikel) konsisten menuju $0$. Ini menjadi justifikasi matematis bahwa kawanan telah bersepakat mutlak pada satu solusi final.
   \end{itemize}
 \end{frame}
@@ -415,7 +418,7 @@
   \begin{block}{Kesimpulan Berdasarkan Hasil Riset}
     \begin{itemize}
       \item \textbf{Superioritas Hibridisasi:} Perpaduan metaheuristik pencarian global (PSO) dengan heuristik lokal (\textit{Greedy} \& \textit{2-opt}) memproduksi algoritma hibrida yang jauh lebih superior.
-      \item \textbf{Reduksi Jarak Aktual:} Sistem terbukti memecahkan jebakan \textit{local optimum} dan secara masif memangkas jarak TSP Jawa Barat sebesar \textbf{103,86 km} (efisiensi \textbf{11,64\%}).
+      \item \textbf{Reduksi Jarak Aktual:} Sistem terbukti memecahkan jebakan \textit{local optimum} dan secara masif memangkas jarak TSP Jawa Barat sebesar \textbf{107,33 km} (efisiensi \textbf{12,03\%}).
     \end{itemize}
   \end{block}
 
